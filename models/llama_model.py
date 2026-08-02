@@ -12,6 +12,9 @@ class LlamaModel:
         self.host = host
 
     def generate(self, prompt: str) -> str:
+        print("\n========== PROMPT SENT TO OLLAMA ==========\n")
+print(prompt)
+print("\n===========================================\n")
         payload = {
             "model": self.model_name,
             "prompt": prompt,
