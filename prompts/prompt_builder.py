@@ -10,17 +10,27 @@ class PromptBuilder:
 
     def build_prompt(self, page_name: str):
 
-        mcc_text = ""
+        mcc_text = mcc_text = """
+MCC: 2741
+Industry: Miscellaneous Publishing and Printing
+Description: Publishing and commercial printing services.
 
-        for item in self.mcc_codes:
+MCC: 4899
+Industry: Cable, Satellite and Other Pay Television Services
+Description: Cable, satellite and streaming pay television providers.
 
-            description = item.get("description", "")
+MCC: 5815
+Industry: Digital Goods - Media
+Description: Online retailers of digital media such as music, movies and books.
 
-            mcc_text += (
-                f"MCC: {item['mcc']}\n"
-                f"Industry: {item['industry']}\n"
-                f"Description: {description}\n\n"
-            )
+MCC: 5818
+Industry: Digital Goods - Multi-Category
+Description: Online retailers selling multiple categories of digital goods.
+
+MCC: 5968
+Industry: Direct Marketing - Continuity/Subscription Merchant
+Description: Subscription and recurring billing merchants.
+"""
 
         prompt = f"""
 You are an expert Merchant Category Code (MCC) classifier.
