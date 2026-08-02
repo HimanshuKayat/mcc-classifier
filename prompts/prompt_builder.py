@@ -64,5 +64,6 @@ Return EXACTLY:
     "reason": "One sentence explaining the decision."
 }}
 """
+        print(prompt)
 
         return prompt
