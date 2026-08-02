@@ -1,0 +1,512 @@
+[
+  {
+    "mcc": "0742",
+    "industry": "Veterinary Services",
+    "description": "Veterinary clinics, animal hospitals and pet healthcare providers."
+  },
+  {
+    "mcc": "0763",
+    "industry": "Agricultural Cooperatives",
+    "description": "Agricultural cooperatives and farming supply organizations."
+  },
+  {
+    "mcc": "0780",
+    "industry": "Landscaping Services",
+    "description": "Landscaping, lawn care and gardening services."
+  },
+  {
+    "mcc": "1520",
+    "industry": "General Contractors",
+    "description": "Residential and commercial construction contractors."
+  },
+  {
+    "mcc": "1711",
+    "industry": "Heating and Plumbing Contractors",
+    "description": "HVAC, plumbing and heating installation services."
+  },
+  {
+    "mcc": "1731",
+    "industry": "Electrical Contractors",
+    "description": "Electrical installation and maintenance contractors."
+  },
+  {
+    "mcc": "1740",
+    "industry": "Masonry Contractors",
+    "description": "Masonry, stonework and plaster contractors."
+  },
+  {
+    "mcc": "1750",
+    "industry": "Carpentry Contractors",
+    "description": "Carpentry and woodwork contractors."
+  },
+  {
+    "mcc": "1761",
+    "industry": "Roofing Contractors",
+    "description": "Roof installation and repair contractors."
+  },
+  {
+    "mcc": "1771",
+    "industry": "Concrete Contractors",
+    "description": "Concrete work and foundation contractors."
+  },
+  {
+    "mcc": "1799",
+    "industry": "Special Trade Contractors",
+    "description": "Specialized construction and repair contractors."
+  },
+  {
+    "mcc": "2741",
+    "industry": "Publishing",
+    "description": "Book, magazine and other publishing services."
+  },
+  {
+    "mcc": "2791",
+    "industry": "Printing Services",
+    "description": "Printing, typesetting and plate making."
+  },
+  {
+    "mcc": "2842",
+    "industry": "Cleaning Services",
+    "description": "Commercial and specialty cleaning services."
+  },
+  {
+    "mcc": "3000",
+    "industry": "United Airlines",
+    "description": "United Airlines ticketing and services."
+  },
+  {
+    "mcc": "3001",
+    "industry": "American Airlines",
+    "description": "American Airlines ticketing and services."
+  },
+  {
+    "mcc": "3008",
+    "industry": "Lufthansa",
+    "description": "Lufthansa airline services."
+  },
+  {
+    "mcc": "3058",
+    "industry": "Delta Air Lines",
+    "description": "Delta airline ticket purchases."
+  },
+  {
+    "mcc": "3075",
+    "industry": "Singapore Airlines",
+    "description": "Singapore Airlines ticket purchases."
+  },
+  {
+    "mcc": "3351",
+    "industry": "Hertz",
+    "description": "Car rental services."
+  },
+  {
+    "mcc": "3352",
+    "industry": "Avis",
+    "description": "Car rental services."
+  },
+  {
+    "mcc": "3353",
+    "industry": "Budget",
+    "description": "Car rental services."
+  },
+  {
+    "mcc": "3501",
+    "industry": "Holiday Inn",
+    "description": "Hotel accommodation."
+  },
+  {
+    "mcc": "3504",
+    "industry": "Hilton Hotels",
+    "description": "Hotel accommodation."
+  },
+  {
+    "mcc": "3509",
+    "industry": "Marriott Hotels",
+    "description": "Hotel accommodation."
+  },
+  {
+    "mcc": "4011",
+    "industry": "Railroads",
+    "description": "Passenger and freight rail services."
+  },
+  {
+    "mcc": "4111",
+    "industry": "Local Transportation",
+    "description": "Taxi, rideshare and local passenger transport."
+  },
+  {
+    "mcc": "4112",
+    "industry": "Passenger Railways",
+    "description": "Passenger railway operators."
+  },
+  {
+    "mcc": "4121",
+    "industry": "Taxicabs",
+    "description": "Taxi and limousine services."
+  },
+  {
+    "mcc": "4131",
+    "industry": "Bus Lines",
+    "description": "Bus transportation services."
+  },
+  {
+    "mcc": "4214",
+    "industry": "Motor Freight",
+    "description": "Freight and logistics carriers."
+  },
+  {
+    "mcc": "4411",
+    "industry": "Cruise Lines",
+    "description": "Cruise and passenger ship operators."
+  },
+  {
+    "mcc": "4457",
+    "industry": "Boat Rentals",
+    "description": "Boat rental services."
+  },
+  {
+    "mcc": "4468",
+    "industry": "Marinas",
+    "description": "Marinas and docking facilities."
+  },
+  {
+    "mcc": "4511",
+    "industry": "Airlines",
+    "description": "Commercial passenger airlines."
+  },
+  {
+    "mcc": "4722",
+    "industry": "Travel Agencies",
+    "description": "Travel booking and tour operators."
+  },
+  {
+    "mcc": "4784",
+    "industry": "Tolls",
+    "description": "Bridge, highway and toll payments."
+  },
+  {
+    "mcc": "4789",
+    "industry": "Transportation Services",
+    "description": "Miscellaneous transportation services."
+  },
+  {
+    "mcc": "4812",
+    "industry": "Telecom Equipment",
+    "description": "Telecommunication equipment."
+  },
+  {
+    "mcc": "4814",
+    "industry": "Telecommunication Services",
+    "description": "Mobile, broadband and telecom providers."
+  },
+  {
+    "mcc": "4816",
+    "industry": "Computer Network Services",
+    "description": "Internet and network service providers."
+  },
+  {
+    "mcc": "4821",
+    "industry": "Money Transfer",
+    "description": "Money transfer and remittance services."
+  },
+  {
+    "mcc": "4899",
+    "industry": "Cable Services",
+    "description": "Cable television and subscription media."
+  },
+  {
+    "mcc": "4900",
+    "industry": "Utilities",
+    "description": "Electricity, gas and water utilities."
+  },
+  {
+    "mcc": "5013",
+    "industry": "Motor Vehicle Supplies",
+    "description": "Automotive parts wholesalers."
+  },
+  {
+    "mcc": "5021",
+    "industry": "Office Furniture",
+    "description": "Office furniture suppliers."
+  },
+  {
+    "mcc": "5039",
+    "industry": "Construction Materials",
+    "description": "Building material suppliers."
+  },
+  {
+    "mcc": "5044",
+    "industry": "Office Equipment",
+    "description": "Office machines and equipment."
+  },
+  {
+    "mcc": "5045",
+    "industry": "Computers and Software",
+    "description": "Computer hardware and software retailers."
+  },
+  {
+    "mcc": "5047",
+    "industry": "Medical Equipment",
+    "description": "Medical devices and equipment."
+  },
+  {
+    "mcc": "5065",
+    "industry": "Electrical Parts",
+    "description": "Electrical components and supplies."
+  },
+  {
+    "mcc": "5072",
+    "industry": "Hardware Equipment",
+    "description": "Industrial hardware suppliers."
+  },
+  {
+    "mcc": "5085",
+    "industry": "Industrial Supplies",
+    "description": "Industrial machinery and supplies."
+  },
+  {
+    "mcc": "5094",
+    "industry": "Precious Stones",
+    "description": "Jewelry materials and precious metals."
+  },
+  {
+    "mcc": "5099",
+    "industry": "Durable Goods",
+    "description": "Miscellaneous durable goods wholesalers."
+  },
+  {
+    "mcc": "5111",
+    "industry": "Stationery",
+    "description": "Office stationery and paper supplies."
+  },
+  {
+    "mcc": "5122",
+    "industry": "Pharmaceuticals",
+    "description": "Drug wholesalers and distributors."
+  },
+  {
+    "mcc": "5192",
+    "industry": "Books and Periodicals",
+    "description": "Books, newspapers and magazines."
+  },
+  {
+    "mcc": "5199",
+    "industry": "Nondurable Goods",
+    "description": "Miscellaneous nondurable goods."
+  },
+  {
+    "mcc": "5200",
+    "industry": "Home Supply Warehouse",
+    "description": "Large home improvement stores."
+  },
+  {
+    "mcc": "5211",
+    "industry": "Building Materials",
+    "description": "Building materials and lumber."
+  },
+  {
+    "mcc": "5231",
+    "industry": "Glass and Paint",
+    "description": "Glass, paint and wallpaper stores."
+  },
+  {
+    "mcc": "5251",
+    "industry": "Hardware Stores",
+    "description": "Retail hardware stores."
+  },
+  {
+    "mcc": "5261",
+    "industry": "Garden Supply",
+    "description": "Garden centers and nurseries."
+  },
+  {
+    "mcc": "5271",
+    "industry": "Mobile Home Dealers",
+    "description": "Mobile home retailers."
+  },
+  {
+    "mcc": "5300",
+    "industry": "Wholesale Clubs",
+    "description": "Warehouse clubs and membership retailers."
+  },
+  {
+    "mcc": "5309",
+    "industry": "Duty Free Stores",
+    "description": "Duty-free retail outlets."
+  },
+  {
+    "mcc": "5310",
+    "industry": "Discount Stores",
+    "description": "Discount retail chains."
+  },
+  {
+    "mcc": "5311",
+    "industry": "Department Stores",
+    "description": "Department stores selling diverse merchandise."
+  },
+  {
+    "mcc": "5331",
+    "industry": "Variety Stores",
+    "description": "Variety and value stores."
+  },
+  {
+    "mcc": "5399",
+    "industry": "General Merchandise Stores",
+    "description": "General merchandise retailers."
+  },
+  {
+    "mcc": "5411",
+    "industry": "Grocery Stores",
+    "description": "Supermarkets, grocery stores and hypermarkets selling food and household essentials."
+  },
+  {
+    "mcc": "5422",
+    "industry": "Freezer Meat",
+    "description": "Meat locker and frozen meat stores."
+  },
+  {
+    "mcc": "5441",
+    "industry": "Candy Stores",
+    "description": "Candy, confectionery and nut stores."
+  },
+  {
+    "mcc": "5451",
+    "industry": "Dairy Stores",
+    "description": "Retail dairy product stores."
+  },
+  {
+    "mcc": "5462",
+    "industry": "Bakeries",
+    "description": "Bakeries selling bread, cakes and pastries."
+  },
+  {
+    "mcc": "5499",
+    "industry": "Miscellaneous Food Stores",
+    "description": "Specialty food retailers and gourmet food shops."
+  },
+  {
+    "mcc": "5511",
+    "industry": "Car Dealers",
+    "description": "New automobile dealers."
+  },
+  {
+    "mcc": "5521",
+    "industry": "Used Car Dealers",
+    "description": "Used vehicle dealers."
+  },
+  {
+    "mcc": "5532",
+    "industry": "Tire Stores",
+    "description": "Automotive tire retailers."
+  },
+  {
+    "mcc": "5533",
+    "industry": "Auto Parts",
+    "description": "Automotive parts and accessories."
+  },
+  {
+    "mcc": "5541",
+    "industry": "Service Stations",
+    "description": "Fuel stations and petrol pumps."
+  },
+  {
+    "mcc": "5542",
+    "industry": "Automated Fuel Dispensers",
+    "description": "Self-service fuel dispensers."
+  },
+  {
+    "mcc": "5551",
+    "industry": "Boat Dealers",
+    "description": "Boat sales and dealers."
+  },
+  {
+    "mcc": "5561",
+    "industry": "Recreational Vehicles",
+    "description": "RV dealers."
+  },
+  {
+    "mcc": "5571",
+    "industry": "Motorcycle Dealers",
+    "description": "Motorcycle retailers."
+  },
+  {
+    "mcc": "5599",
+    "industry": "Vehicle Dealers",
+    "description": "Miscellaneous vehicle dealers."
+  },
+  {
+    "mcc": "5651",
+    "industry": "Family Clothing",
+    "description": "Family clothing retailers."
+  },
+  {
+    "mcc": "5661",
+    "industry": "Shoe Stores",
+    "description": "Footwear and shoe retailers."
+  },
+  {
+    "mcc": "5691",
+    "industry": "Clothing Stores",
+    "description": "Fashion and apparel retailers."
+  },
+  {
+    "mcc": "5712",
+    "industry": "Furniture Stores",
+    "description": "Home and office furniture retailers."
+  },
+  {
+    "mcc": "5719",
+    "industry": "Home Furnishings",
+    "description": "Home d\u00e9cor and furnishing retailers."
+  },
+  {
+    "mcc": "5722",
+    "industry": "Household Appliances",
+    "description": "Appliance retailers."
+  },
+  {
+    "mcc": "5732",
+    "industry": "Electronics Stores",
+    "description": "Consumer electronics retailers."
+  },
+  {
+    "mcc": "5734",
+    "industry": "Computer Software",
+    "description": "Software retailers."
+  },
+  {
+    "mcc": "5735",
+    "industry": "Record Stores",
+    "description": "Music and entertainment media retailers."
+  },
+  {
+    "mcc": "5812",
+    "industry": "Eating Places and Restaurants",
+    "description": "Restaurants, cafes, pizza chains, dine-in and takeaway food establishments."
+  },
+  {
+    "mcc": "5814",
+    "industry": "Fast Food Restaurants",
+    "description": "Quick-service and fast-food restaurants."
+  },
+  {
+    "mcc": "5912",
+    "industry": "Drug Stores and Pharmacies",
+    "description": "Pharmacies and medical stores."
+  },
+  {
+    "mcc": "5941",
+    "industry": "Sporting Goods",
+    "description": "Sporting goods and athletic equipment retailers."
+  },
+  {
+    "mcc": "5942",
+    "industry": "Book Stores",
+    "description": "Bookstores and educational retailers."
+  },
+  {
+    "mcc": "5944",
+    "industry": "Jewelry Stores",
+    "description": "Jewelry and watch retailers."
+  }
+]
