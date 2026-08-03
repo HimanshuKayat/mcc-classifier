@@ -1,4 +1,5 @@
 from scripts.classifier import MCCClassifier
+import json
 
 
 def main():
@@ -6,12 +7,12 @@ def main():
     classifier = MCCClassifier()
 
     print("=" * 60)
-    print("Merchant Category Code (MCC) Classifier")
+    print("Wikipedia Entity Understanding")
     print("=" * 60)
 
     while True:
 
-        page_name = input("\nEnter article/page name (or type 'exit'): ").strip()
+        page_name = input("\nEnter Wikipedia article title (or type 'exit'): ").strip()
 
         if page_name.lower() == "exit":
             print("\nGoodbye!")
@@ -19,12 +20,9 @@ def main():
 
         result = classifier.classify(page_name)
 
-        print("\nPrediction")
+        print("\nKnowledge Retrieved")
         print("-" * 40)
-        print(f"MCC        : {result['mcc']}")
-        print(f"Industry   : {result['industry']}")
-        print(f"Confidence : {result['confidence']}")
-        print(f"Reason     : {result['reason']}")
+        print(json.dumps(result, indent=4))
 
 
 if __name__ == "__main__":
