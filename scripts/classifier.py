@@ -29,6 +29,9 @@ class MCCClassifier:
         print("\n==========================================\n")
 
         entity_profile = JSONParser.parse(entity_response)
+        print("\n========== PARSED ENTITY PROFILE ==========\n")
+        print(entity_profile)
+        print("\n===========================================\n")
 
         ####################################################
         # STEP 2 : Map Business Profile to MCC
