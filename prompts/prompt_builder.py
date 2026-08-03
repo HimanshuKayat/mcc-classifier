@@ -34,22 +34,24 @@ class PromptBuilder:
         prompt = f"""
 You are an expert Merchant Category Code (MCC) classifier.
 
-Your task is to classify the merchant below into EXACTLY ONE MCC from the list provided.
+The input below is a Wikipedia article title.
 
-Merchant Name:
+Wikipedia Article Title:
 {page_name}
 
-Available MCC Profiles:
+Below is a database of valid MCC profiles.
 
 {mcc_text}
 
+Your task is to classify the article into EXACTLY ONE MCC.
+
 Instructions:
 
-- Identify the merchant using your existing knowledge.
-- Determine the merchant's primary business or service.
-- Compare that business against the complete MCC profile, including Industry, Category, Description, Keywords and Aliases.
-- Base your decision on the merchant's primary business activity, not on keyword or name similarity.
-- Choose the SINGLE closest matching MCC from the list above.
+- First identify what the Wikipedia article represents.
+- Determine the primary business or commercial activity associated with the article.
+- Compare the article against every MCC profile using all available information, including the Industry, Category, Description, Keywords and Aliases.
+- Base your decision on the overall business activity of the entity, not on keyword or name similarity.
+- Select the single closest matching MCC profile.
 - Never invent an MCC.
 - Return ONLY one valid JSON object.
 
@@ -59,7 +61,7 @@ Return EXACTLY:
     "mcc": "0000",
     "industry": "Industry Name",
     "confidence": 0.95,
-    "reason": "One concise sentence explaining the match."
+    "reason": "One concise sentence explaining why the selected MCC is the closest match."
 }}
 """
 
