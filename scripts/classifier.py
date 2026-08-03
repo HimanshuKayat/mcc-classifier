@@ -1,27 +1,47 @@
 from models.llama_model import LlamaModel
-from prompts.prompt_builder import PromptBuilder
+from prompts.entity_prompt import EntityPromptBuilder
+from prompts.mcc_prompt import MCCPromptBuilder
 from parser import JSONParser
 
 
 class MCCClassifier:
 
     def __init__(self):
+
         self.model = LlamaModel()
-        self.prompt_builder = PromptBuilder()
+
+        self.entity_prompt_builder = EntityPromptBuilder()
+
+        self.mcc_prompt_builder = MCCPromptBuilder()
 
     def classify(self, page_name: str):
 
-        # Build prompt
-        prompt = self.prompt_builder.build_prompt(page_name)
+        ####################################################
+        # STEP 1 : Understand the Wikipedia Article
+        ####################################################
 
-        # Generate response
-        response = self.model.generate(prompt)
+        entity_prompt = self.entity_prompt_builder.build_prompt(page_name)
 
-        print("\n========== RAW LLM RESPONSE ==========\n")
-        print(repr(response))
-        print("\n======================================\n")
+        entity_response = self.model.generate(entity_prompt)
 
-        # Parse JSON
-        result = JSONParser.parse(response)
+        print("\n========== ENTITY UNDERSTANDING ==========\n")
+        print(entity_response)
+        print("\n==========================================\n")
+
+        entity_profile = JSONParser.parse(entity_response)
+
+        ####################################################
+        # STEP 2 : Map Business Profile to MCC
+        ####################################################
+
+        mcc_prompt = self.mcc_prompt_builder.build_prompt(entity_profile)
+
+        mcc_response = self.model.generate(mcc_prompt)
+
+        print("\n========== MCC MAPPING ==========\n")
+        print(mcc_response)
+        print("\n=================================\n")
+
+        result = JSONParser.parse(mcc_response)
 
         return result
