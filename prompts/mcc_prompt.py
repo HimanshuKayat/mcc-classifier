@@ -3,69 +3,57 @@ import json
 
 class MCCPromptBuilder:
 
-    def __init__(self):
+    def build_prompt(self, entity_profile, candidate_mccs):
 
-        with open("data/mcc_codes.json", "r", encoding="utf-8") as f:
-            self.mcc_codes = json.load(f)
-
-    def build_prompt(self, entity_profile):
+        entity_json = json.dumps(entity_profile, indent=4)
 
         mcc_text = ""
 
-        for item in self.mcc_codes:
-
-            mcc = item.get("mcc", "")
-            industry = item.get("industry", "")
-            category = item.get("category", "")
-            description = item.get("description", "")
-
-            keywords = ", ".join(item.get("keywords", []))
-            aliases = ", ".join(item.get("aliases", []))
+        for item in candidate_mccs:
 
             mcc_text += (
-                f"MCC: {mcc}\n"
-                f"Industry: {industry}\n"
-                f"Category: {category}\n"
-                f"Description: {description}\n"
-                f"Keywords: {keywords}\n"
-                f"Aliases: {aliases}\n\n"
+                f"MCC: {item.get('mcc','')}\n"
+                f"Industry: {item.get('industry','')}\n"
+                f"Category: {item.get('category','')}\n"
+                f"Description: {item.get('description','')}\n"
+                f"Keywords: {', '.join(item.get('keywords', []))}\n"
+                f"Aliases: {', '.join(item.get('aliases', []))}\n\n"
             )
-
-        entity_json = json.dumps(entity_profile, indent=4)
 
         prompt = f"""
 You are an expert Merchant Category Code (MCC) classifier.
 
-Below is a structured business profile of an entity.
+Below is a structured business profile.
 
-Business Profile:
+Business Profile
 
 {entity_json}
 
-Below is a database of valid MCC profiles.
+Below are the MOST SEMANTICALLY SIMILAR MCC profiles retrieved from the database.
 
 {mcc_text}
 
-Your task is to compare the Business Profile against every MCC profile internally.
+Your task is to compare the Business Profile with ONLY these candidate MCC profiles.
 
-Do NOT explain your comparison process.
+Use all information available in the Business Profile.
+
+Do NOT compare against any MCC outside this list.
+
+Think internally.
+
+Do NOT explain your reasoning.
 
 Do NOT list candidate MCCs.
 
 Do NOT rank MCCs.
 
-Do NOT evaluate each MCC one by one.
+Return ONLY one valid JSON object.
 
-Perform the comparison internally and return ONLY the single best matching MCC.
-
-If no MCC is a good match, return the closest available MCC from the provided list.
-
-Return EXACTLY one JSON object and nothing else.
-
-{{    "mcc": "0000",
+{{
+    "mcc": "0000",
     "industry": "Industry Name",
     "confidence": 0.95,
-    "reason": "One concise sentence explaining why this MCC best matches the entity."
+    "reason": "One concise sentence explaining the selected MCC."
 }}
 """
 
