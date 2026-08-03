@@ -1,6 +1,7 @@
 from models.llama_model import LlamaModel
 from prompts.entity_prompt import EntityPromptBuilder
 from prompts.mcc_prompt import MCCPromptBuilder
+from retriever.embedding_retriever import EmbeddingRetriever
 from parser import JSONParser
 
 
@@ -14,10 +15,12 @@ class MCCClassifier:
 
         self.mcc_prompt_builder = MCCPromptBuilder()
 
+        self.retriever = EmbeddingRetriever()
+
     def classify(self, page_name: str):
 
         ####################################################
-        # STEP 1 : Understand the Wikipedia Article
+        # STEP 1 : Entity Understanding
         ####################################################
 
         entity_prompt = self.entity_prompt_builder.build_prompt(page_name)
@@ -29,22 +32,42 @@ class MCCClassifier:
         print("\n==========================================\n")
 
         entity_profile = JSONParser.parse(entity_response)
+
         print("\n========== PARSED ENTITY PROFILE ==========\n")
         print(entity_profile)
         print("\n===========================================\n")
 
         ####################################################
-        # STEP 2 : Map Business Profile to MCC
+        # STEP 2 : Retrieve Top MCC Candidates
         ####################################################
 
-        mcc_prompt = self.mcc_prompt_builder.build_prompt(entity_profile)
+        candidates = self.retriever.retrieve(
+            entity_profile,
+            top_k=20
+        )
+
+        print("\n========== RETRIEVED MCC CANDIDATES ==========\n")
+
+        for item in candidates:
+            print(
+                f"{item['mcc']} - {item['industry']}"
+            )
+
+        print("\n=============================================\n")
+
+        ####################################################
+        # STEP 3 : Final MCC Selection
+        ####################################################
+
+        mcc_prompt = self.mcc_prompt_builder.build_prompt(
+            entity_profile,
+            candidates
+        )
 
         mcc_response = self.model.generate(mcc_prompt)
 
-        print("\n========== MCC MAPPING ==========\n")
+        print("\n========== FINAL MCC RESPONSE ==========\n")
         print(mcc_response)
-        print("\n=================================\n")
+        print("\n========================================\n")
 
-        result = JSONParser.parse(mcc_response)
-
-        return result
+        return JSONParser.parse(mcc_response)
