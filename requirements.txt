@@ -1,6 +1,5 @@
-torch
-transformers
-accelerate
-sentencepiece
-safetensors
-huggingface_hub
+ollama
+requests
+pandas
+openpyxl
+tqdm
