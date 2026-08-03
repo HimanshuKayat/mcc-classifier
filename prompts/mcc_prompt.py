@@ -62,12 +62,11 @@ If no MCC is a good match, return the closest available MCC from the provided li
 
 Return EXACTLY one JSON object and nothing else.
 
-{
-    "mcc": "0000",
+{{    "mcc": "0000",
     "industry": "Industry Name",
     "confidence": 0.95,
     "reason": "One concise sentence explaining why this MCC best matches the entity."
-}
+}}
 """
 
         return prompt
