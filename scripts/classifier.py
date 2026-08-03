@@ -13,6 +13,10 @@ class MCCClassifier:
 
         prompt = self.prompt_builder.build_prompt(page_name)
 
+        print("\n========== PROMPT SENT TO LLM ==========\n")
+        print(prompt)
+        print("\n========================================\n")
+
         response = self.model.generate(prompt)
 
         print("\n========== RAW LLM RESPONSE ==========\n")
