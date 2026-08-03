@@ -12,10 +12,8 @@ class JSONParser:
 
         response = response.strip()
 
-        # Remove markdown code fences
         response = response.replace("```json", "").replace("```", "").strip()
 
-        # Extract the first JSON object if there's extra text
         match = re.search(r"\{.*\}", response, re.DOTALL)
 
         if not match:
