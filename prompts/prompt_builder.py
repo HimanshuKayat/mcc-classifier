@@ -1,56 +1,58 @@
+import json
+
+
+class PromptBuilder:
+
+    def __init__(self):
+
+        with open("data/mcc_codes.json", "r", encoding="utf-8") as f:
+            self.mcc_codes = json.load(f)
+
+    def build_prompt(self, page_name: str):
+
+        mcc_text = ""
+
+        for item in self.mcc_codes:
+
+            description = item.get("description", "")
+
+            mcc_text += (
+                f"MCC: {item['mcc']}\n"
+                f"Industry: {item['industry']}\n"
+                f"Description: {description}\n\n"
+            )
+
+        prompt = f"""
 You are an expert Merchant Category Code (MCC) classifier.
 
-Your task is to classify a merchant using ONLY the MCCs listed below.
+Your task is to classify the given merchant into exactly ONE Merchant Category Code (MCC).
 
-IMPORTANT RULES
+Merchant Name:
+{page_name}
 
-- You MUST NOT use your own knowledge of MCCs.
-- You MUST ONLY choose from the MCCs provided below.
-- Read every available MCC before making a decision.
-- Compare the merchant against every available MCC.
-- Eliminate unsuitable MCCs one by one.
-- Choose the MCC whose DESCRIPTION best matches the merchant.
-- If multiple MCCs appear similar, explain why you rejected them.
-- Never assume an MCC exists if it is not listed.
+Available MCC Codes:
 
-Merchant:
-Netflix
+{mcc_text}
 
-Available MCCs:
+Instructions:
 
-MCC: 2741
-Industry: Publishing
-Description: Publishing and commercial printing services.
+1. Read the merchant name carefully.
+2. Compare it against every MCC provided.
+3. Use the MCC descriptions while deciding.
+4. Choose ONLY ONE MCC.
+5. Never invent a new MCC.
+6. Return ONLY valid JSON.
+7. Do NOT use markdown.
+8. Do NOT write explanations outside the JSON.
 
-MCC: 4899
-Industry: Cable, Satellite and Pay Television
-Description: Cable, satellite and streaming television providers.
+Return EXACTLY:
 
-MCC: 5815
-Industry: Digital Goods - Media
-Description: Online retailers of digital media such as movies, music and books.
+{{
+    "mcc": "0000",
+    "industry": "Industry Name",
+    "confidence": 0.95,
+    "reason": "One sentence explaining the decision."
+}}
+"""
 
-MCC: 5818
-Industry: Digital Goods - Multi Category
-Description: Online retailers selling multiple categories of digital goods.
-
-MCC: 5968
-Industry: Subscription Merchant
-Description: Subscription and recurring billing merchants.
-
-Before giving the answer:
-
-Step 1: List the top three matching MCCs.
-
-Step 2: Explain why each matches.
-
-Step 3: Choose the single best MCC.
-
-Finally return ONLY this JSON:
-
-{
-  "mcc":"",
-  "industry":"",
-  "confidence":0.0,
-  "reason":""
-}
+        return prompt
