@@ -11,20 +11,19 @@ def main():
 
     while True:
 
-        page_name = input("\nEnter article/page name (or type 'exit'): ").strip()
+        page_name = input("\nEnter page name (or exit): ").strip()
 
         if page_name.lower() == "exit":
-            print("\nGoodbye!")
             break
 
         result = classifier.classify(page_name)
 
         print("\nPrediction")
         print("-" * 40)
-        print(f"MCC        : {result['mcc']}")
-        print(f"Industry   : {result['industry']}")
-        print(f"Confidence : {result['confidence']}")
-        print(f"Reason     : {result['reason']}")
+        print("MCC:", result["mcc"])
+        print("Industry:", result["industry"])
+        print("Confidence:", result["confidence"])
+        print("Reason:", result["reason"])
 
 
 if __name__ == "__main__":
