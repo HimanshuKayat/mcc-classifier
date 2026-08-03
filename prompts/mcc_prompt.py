@@ -46,34 +46,28 @@ Below is a database of valid MCC profiles.
 
 {mcc_text}
 
-Your task is to compare the Business Profile against EVERY MCC profile.
+Your task is to compare the Business Profile against every MCC profile internally.
 
-Use ALL relevant information from the Business Profile, including:
+Do NOT explain your comparison process.
 
-- entity_type
-- summary
-- primary_business
-- industry
-- products_services
-- target_customers
-- business_model
-- keywords
-- aliases
+Do NOT list candidate MCCs.
 
-Compare these fields with the Industry, Category, Description, Keywords and Aliases of every MCC profile.
+Do NOT rank MCCs.
 
-Choose the SINGLE MCC profile that best matches the entity's PRIMARY business activity.
+Do NOT evaluate each MCC one by one.
 
-Never invent an MCC.
+Perform the comparison internally and return ONLY the single best matching MCC.
 
-Return ONLY valid JSON.
+If no MCC is a good match, return the closest available MCC from the provided list.
 
-{{
+Return EXACTLY one JSON object and nothing else.
+
+{
     "mcc": "0000",
     "industry": "Industry Name",
     "confidence": 0.95,
-    "reason": "One concise sentence explaining the decision."
-}}
+    "reason": "One concise sentence explaining why this MCC best matches the entity."
+}
 """
 
         return prompt
