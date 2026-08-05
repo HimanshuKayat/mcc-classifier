@@ -1,4 +1,3 @@
-
 import pickle
 
 from sentence_transformers import SentenceTransformer
@@ -13,8 +12,10 @@ class EmbeddingRetriever:
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     ):
 
+        # Load embedding model
         self.model = SentenceTransformer(model_name)
 
+        # Load precomputed MCC embeddings
         with open(embedding_file, "rb") as f:
             data = pickle.load(f)
 
@@ -23,35 +24,40 @@ class EmbeddingRetriever:
 
     def retrieve(self, entity_profile, top_k=20):
 
+        # Convert entity profile into searchable text
         query = self._profile_to_text(entity_profile)
 
+        # Generate embedding
         query_embedding = self.model.encode(
             [query],
             convert_to_numpy=True
         )
 
+        # Compute cosine similarities
         similarities = cosine_similarity(
             query_embedding,
             self.embeddings
         )[0]
 
+        # Rank MCC profiles
         ranked = sorted(
             zip(similarities, self.mcc_profiles),
             key=lambda x: x[0],
             reverse=True
         )
 
+        # Keep similarity score along with profile
         results = []
 
-for similarity, profile in ranked[:top_k]:
+        for similarity, profile in ranked[:top_k]:
 
-    p = profile.copy()
+            profile_copy = profile.copy()
 
-    p["retrieval_score"] = float(similarity)
+            profile_copy["retrieval_score"] = float(similarity)
 
-    results.append(p)
+            results.append(profile_copy)
 
-return results
+        return results
 
     def _profile_to_text(self, profile):
 
