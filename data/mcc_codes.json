@@ -5186,5 +5186,127 @@
     "aliases": [
       "intracompany purchase"
     ]
+  },
+  {[
+  {
+    "mcc": "4723",
+    "industry": "Package Tour Operators",
+    "category": "Travel",
+    "description": "Package tour operators arranging bundled travel packages, primarily used in select European markets.",
+    "keywords": [
+      "package tour",
+      "tour operator",
+      "travel package",
+      "bundled travel",
+      "package holiday"
+    ],
+    "aliases": [
+      "package tour operator",
+      "tour package provider"
+    ]
+  },
+  {
+    "mcc": "5262",
+    "industry": "Online Marketplaces",
+    "category": "Digital Services",
+    "description": "E-commerce platforms and online marketplaces connecting multiple sellers with buyers.",
+    "keywords": [
+      "online marketplace",
+      "e-commerce platform",
+      "multi-vendor marketplace",
+      "online shopping platform",
+      "digital marketplace"
+    ],
+    "aliases": [
+      "marketplace",
+      "online marketplace platform",
+      "e-commerce marketplace"
+    ]
+  },
+  {
+    "mcc": "5412",
+    "industry": "Digital Gold Purchase",
+    "category": "Financial Services",
+    "description": "Purchase of digital gold through online platforms and payment apps.",
+    "keywords": [
+      "digital gold",
+      "gold purchase",
+      "online gold buying",
+      "gold investment",
+      "e-gold"
+    ],
+    "aliases": [
+      "digital gold purchase",
+      "buy digital gold"
+    ]
+  },
+  {
+    "mcc": "5413",
+    "industry": "Credit Card Bill Payments",
+    "category": "Financial Services",
+    "description": "Payment of credit card bills and dues through payment platforms.",
+    "keywords": [
+      "credit card bill payment",
+      "card bill payment",
+      "credit card dues",
+      "bill payment",
+      "card payment"
+    ],
+    "aliases": [
+      "credit card bill pay",
+      "cc bill payment"
+    ]
+  },
+  {
+    "mcc": "5832",
+    "industry": "Antique Shops - Sales, Repairs and Restoration Services",
+    "category": "Retail",
+    "description": "Antique shops offering sales along with repair and restoration services for antique items.",
+    "keywords": [
+      "antique shop",
+      "antique repair",
+      "antique restoration",
+      "vintage restoration",
+      "antique services"
+    ],
+    "aliases": [
+      "antique repair shop",
+      "antique restoration service"
+    ]
+  },
+  {
+    "mcc": "7332",
+    "industry": "Blueprinting and Photocopying Services",
+    "category": "Printing",
+    "description": "Blueprinting and photocopying services for technical and general documents.",
+    "keywords": [
+      "blueprinting",
+      "photocopying",
+      "document copying",
+      "print reproduction",
+      "technical drawing copies"
+    ],
+    "aliases": [
+      "blueprint service",
+      "photocopy service"
+    ]
+  },
+  {
+    "mcc": "7511",
+    "industry": "Truck Stops",
+    "category": "Transportation",
+    "description": "Truck stop facilities offering fuel, parking and services for commercial truck drivers.",
+    "keywords": [
+      "truck stop",
+      "trucker facility",
+      "highway rest stop",
+      "truck fuel stop",
+      "trucker services"
+    ],
+    "aliases": [
+      "truck stop facility",
+      "highway truck stop"
+    ]
   }
+]
 ]
