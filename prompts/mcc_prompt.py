@@ -23,37 +23,42 @@ class MCCPromptBuilder:
         prompt = f"""
 You are an expert Merchant Category Code (MCC) classifier.
 
-Below is a structured business profile.
+Below is the Business Profile generated from Stage 1.
 
 Business Profile
 
 {entity_json}
 
-Below are the MOST SEMANTICALLY SIMILAR MCC profiles retrieved from the database.
+-------------------------------------------------------
+
+Below are the MOST SEMANTICALLY SIMILAR MCC profiles.
 
 {mcc_text}
 
-Your task is to compare the Business Profile with ONLY these candidate MCC profiles.
+-------------------------------------------------------
 
-Use all information available in the Business Profile.
+Your task is to compare ONLY these MCC candidates.
 
-Do NOT compare against any MCC outside this list.
+Select the SINGLE closest MCC.
 
-Think internally.
+Do NOT invent an MCC.
 
-Do NOT explain your reasoning.
+Do NOT compare against MCCs outside this list.
 
-Do NOT list candidate MCCs.
+Return ONLY valid JSON.
 
-Do NOT rank MCCs.
+IMPORTANT:
 
-Return ONLY one valid JSON object.
+Do NOT generate a confidence score based on your own certainty.
+
+The confidence will be calculated later by the application using semantic agreement.
+
+Return EXACTLY:
 
 {{
-    "mcc": "0000",
-    "industry": "Industry Name",
-    "confidence": 0.95,
-    "reason": "One concise sentence explaining the selected MCC."
+    "selected_mcc": "",
+    "selected_industry": "",
+    "selected_reason": ""
 }}
 """
 
