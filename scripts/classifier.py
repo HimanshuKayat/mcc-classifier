@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from models.llama_model import LlamaModel
 from prompts.entity_prompt import EntityPromptBuilder
 from prompts.mcc_prompt import MCCPromptBuilder
@@ -28,44 +30,82 @@ class MCCClassifier:
         # STEP 1 : ENTITY UNDERSTANDING
         ####################################################
 
-        entity_prompt = self.entity_prompt_builder.build_prompt(page_name)
+        entity_prompt = self.entity_prompt_builder.build_prompt(
+            page_name
+        )
 
-        entity_response = self.model.generate(entity_prompt)
+        entity_response = self.model.generate(
+            entity_prompt
+        )
 
         print("\n========== ENTITY UNDERSTANDING ==========\n")
         print(entity_response)
         print("\n==========================================\n")
 
-        entity_profile = JSONParser.parse(entity_response)
+        entity_profile = JSONParser.parse(
+            entity_response
+        )
 
         print("\n========== PARSED ENTITY PROFILE ==========\n")
         print(entity_profile)
         print("\n===========================================\n")
 
         ####################################################
-        # MODEL'S INDEPENDENT MCC (Optional)
+        # MODEL'S INDEPENDENT MCC
         ####################################################
 
         if entity_profile.get("predicted_mcc"):
 
             print("\n========== MODEL'S INDEPENDENT MCC ==========\n")
-            print(f"MCC       : {entity_profile.get('predicted_mcc','')}")
-            print(f"Industry  : {entity_profile.get('predicted_mcc_industry','')}")
-            print(f"Reason    : {entity_profile.get('predicted_mcc_reason','')}")
+
+            print(
+                f"MCC       : {entity_profile.get('predicted_mcc','')}"
+            )
+
+            print(
+                f"Industry  : {entity_profile.get('predicted_mcc_industry','')}"
+            )
+
+            print(
+                f"Reason    : {entity_profile.get('predicted_mcc_reason','')}"
+            )
+
             print("\n============================================\n")
 
         ####################################################
-        # STEP 2 : RETRIEVE TOP MCC CANDIDATES
+        # CREATE CLEAN PROFILE FOR MAPPING
+        ####################################################
+
+        entity_for_mapping = deepcopy(entity_profile)
+
+        entity_for_mapping.pop(
+            "predicted_mcc",
+            None
+        )
+
+        entity_for_mapping.pop(
+            "predicted_mcc_industry",
+            None
+        )
+
+        entity_for_mapping.pop(
+            "predicted_mcc_reason",
+            None
+        )
+
+        ####################################################
+        # STEP 2 : RETRIEVE MCC CANDIDATES
         ####################################################
 
         candidates = self.retriever.retrieve(
-            entity_profile,
+            entity_for_mapping,
             top_k=20
         )
 
         print("\n========== RETRIEVED MCC CANDIDATES ==========\n")
 
         for item in candidates:
+
             print(
                 f"{item['mcc']} - {item['industry']}"
             )
@@ -77,73 +117,75 @@ class MCCClassifier:
         ####################################################
 
         mcc_prompt = self.mcc_prompt_builder.build_prompt(
-            entity_profile,
+            entity_for_mapping,
             candidates
         )
 
-        mcc_response = self.model.generate(mcc_prompt)
+        mcc_response = self.model.generate(
+            mcc_prompt
+        )
 
         print("\n========== FINAL MCC RESPONSE ==========\n")
         print(mcc_response)
         print("\n========================================\n")
 
-        final_result = JSONParser.parse(mcc_response)
-
-        ####################################################
-        # VALIDATE SELECTED MCC
-        ####################################################
-
-        candidate_lookup = {
-            str(profile["mcc"]): profile
-            for profile in candidates
-        }
-
-        selected_profile = candidate_lookup.get(
-            str(final_result.get("selected_mcc", ""))
+        final_result = JSONParser.parse(
+            mcc_response
         )
+
+        ####################################################
+        # FIND SELECTED PROFILE
+        ####################################################
+
+        selected_profile = None
+
+        for profile in candidates:
+
+            if str(profile["mcc"]) == str(
+                final_result.get("selected_mcc")
+            ):
+
+                selected_profile = profile
+                break
+
+        ####################################################
+        # INVALID MCC
+        ####################################################
 
         if selected_profile is None:
 
-            print("\nWARNING")
-            print("=" * 60)
-            print("Model selected an MCC outside the retrieved candidates.")
-            print(f"Returned MCC : {final_result.get('selected_mcc')}")
-            print("Automatically selecting highest-ranked retrieved MCC.")
-            print("=" * 60)
-
-            selected_profile = candidates[0]
-
-            final_result["selected_mcc"] = selected_profile["mcc"]
-            final_result["selected_industry"] = selected_profile["industry"]
-
-            final_result["selected_reason"] = (
-                "Model returned an MCC outside the retrieved candidate list. "
-                "Highest-ranked retrieved MCC selected automatically."
+            raise ValueError(
+                f"\nModel selected MCC "
+                f"{final_result.get('selected_mcc')} "
+                f"which is not present in the retrieved candidates."
             )
 
         ####################################################
-        # STEP 4 : CALCULATE CONFIDENCE
+        # STEP 4 : CONFIDENCE
         ####################################################
 
         confidence = self.confidence.calculate(
-            entity_profile,
-            selected_profile
+
+            entity_profile=entity_profile,
+
+            selected_profile=selected_profile
+
         )
 
         final_result["confidence"] = confidence
 
-        print("\n========== CONFIDENCE DEBUG ==========\n")
-        print(
-            f"Retriever Score : {selected_profile.get('retrieval_score', 0):.4f}"
-        )
-        print(f"Confidence      : {confidence}%")
-        print("\n======================================\n")
+        print("\n========== CONFIDENCE ==========\n")
+        print(f"Confidence : {confidence}%")
+        print("\n================================\n")
 
         ####################################################
         # RETURN
         ####################################################
 
         return {
+
             "entity_profile": entity_profile,
+
             "final_prediction": final_result
+
         }
