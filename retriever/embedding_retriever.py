@@ -41,7 +41,17 @@ class EmbeddingRetriever:
             reverse=True
         )
 
-        return [profile for _, profile in ranked[:top_k]]
+        results = []
+
+for similarity, profile in ranked[:top_k]:
+
+    p = profile.copy()
+
+    p["retrieval_score"] = float(similarity)
+
+    results.append(p)
+
+return results
 
     def _profile_to_text(self, profile):
 
