@@ -4,11 +4,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 class ConfidenceScorer:
 
     def __init__(self, embedding_model):
+
         self.model = embedding_model
 
-    def _encode_similarity(self, text1, text2):
+    def _similarity(self, text1, text2):
 
-        if not text1.strip() or not text2.strip():
+        text1 = str(text1).strip()
+        text2 = str(text2).strip()
+
+        if not text1 or not text2:
             return 0.0
 
         embeddings = self.model.encode(
@@ -16,90 +20,120 @@ class ConfidenceScorer:
             convert_to_numpy=True
         )
 
-        return float(
-            cosine_similarity(
-                [embeddings[0]],
-                [embeddings[1]]
-            )[0][0]
+        similarity = cosine_similarity(
+            [embeddings[0]],
+            [embeddings[1]]
+        )[0][0]
+
+        return float(similarity)
+
+    def calculate(
+        self,
+        entity_profile,
+        selected_profile
+    ):
+
+        ##################################################
+        # MODEL'S INDEPENDENT UNDERSTANDING
+        ##################################################
+
+        predicted_industry = entity_profile.get(
+            "predicted_mcc_industry",
+            ""
         )
 
-    def _entity_profile(self, entity):
-
-        return f"""
-Entity Name:
-{entity.get("entity_name","")}
-
-Entity Type:
-{entity.get("entity_type","")}
-
-Summary:
-{entity.get("summary","")}
-
-Primary Business:
-{entity.get("primary_business","")}
-
-Industry:
-{entity.get("industry","")}
-
-Products:
-{' '.join(entity.get("products_services", []))}
-
-Target Customers:
-{' '.join(entity.get("target_customers", []))}
-
-Business Model:
-{entity.get("business_model","")}
-
-Keywords:
-{' '.join(entity.get("keywords", []))}
-
-Aliases:
-{' '.join(entity.get("aliases", []))}
-"""
-
-    def _mcc_profile(self, mcc):
-
-        return f"""
-MCC:
-{mcc.get("mcc","")}
-
-Industry:
-{mcc.get("industry","")}
-
-Category:
-{mcc.get("category","")}
-
-Description:
-{mcc.get("description","")}
-
-Keywords:
-{' '.join(mcc.get("keywords", []))}
-
-Aliases:
-{' '.join(mcc.get("aliases", []))}
-"""
-
-    def calculate(self, entity_profile, selected_profile):
-
-        entity_text = self._entity_profile(entity_profile)
-
-        mcc_text = self._mcc_profile(selected_profile)
-
-        semantic_similarity = self._encode_similarity(
-            entity_text,
-            mcc_text
+        predicted_reason = entity_profile.get(
+            "predicted_mcc_reason",
+            ""
         )
 
-        retrieval_similarity = selected_profile.get(
-            "retrieval_score",
-            semantic_similarity
+        ##################################################
+        # FINAL MAPPED MCC
+        ##################################################
+
+        selected_industry = selected_profile.get(
+            "industry",
+            ""
         )
+
+        selected_description = selected_profile.get(
+            "description",
+            ""
+        )
+
+        ##################################################
+        # SEMANTIC AGREEMENT
+        ##################################################
+
+        industry_similarity = self._similarity(
+
+            predicted_industry,
+
+            selected_industry
+
+        )
+
+        reason_similarity = self._similarity(
+
+            predicted_reason,
+
+            selected_description
+
+        )
+
+        retrieval_similarity = float(
+
+            selected_profile.get(
+                "retrieval_score",
+                0.0
+            )
+
+        )
+
+        ##################################################
+        # FINAL CONFIDENCE
+        ##################################################
 
         confidence = (
-            semantic_similarity * 0.70 +
-            retrieval_similarity * 0.30
+
+            industry_similarity * 0.40 +
+
+            reason_similarity * 0.40 +
+
+            retrieval_similarity * 0.20
+
         ) * 100
 
-        confidence = max(0.0, min(100.0, confidence))
+        confidence = max(
+            0.0,
+            min(
+                confidence,
+                100.0
+            )
+        )
+
+        ##################################################
+        # DEBUG
+        ##################################################
+
+        print("\n========== CONFIDENCE BREAKDOWN ==========\n")
+
+        print(
+            f"Industry Similarity : {industry_similarity:.3f}"
+        )
+
+        print(
+            f"Reason Similarity   : {reason_similarity:.3f}"
+        )
+
+        print(
+            f"Retriever Score     : {retrieval_similarity:.3f}"
+        )
+
+        print(
+            f"Final Confidence    : {confidence:.2f}%"
+        )
+
+        print("\n==========================================\n")
 
         return round(confidence, 2)
