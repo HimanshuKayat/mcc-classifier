@@ -21,37 +21,23 @@ class MCCPromptBuilder:
             )
 
         prompt = f"""
-You are an expert Merchant Category Code (MCC) classifier.
+Your task is to select EXACTLY ONE MCC from the candidate list above.
 
-Below is the Business Profile generated from Stage 1.
+CRITICAL RULES:
 
-Business Profile
+1. You MUST choose one and only one MCC from the candidate list above.
 
-{entity_json}
+2. The selected_mcc MUST exactly match one of the MCC numbers listed above.
 
--------------------------------------------------------
+3. If you output an MCC that is NOT present in the candidate list, your answer is INVALID.
 
-Below are the MOST SEMANTICALLY SIMILAR MCC profiles.
+4. Do NOT use your own knowledge to invent or recall MCC codes.
 
-{mcc_text}
+5. Ignore any MCC codes you know unless they appear in the candidate list.
 
--------------------------------------------------------
-
-Your task is to compare ONLY these MCC candidates.
-
-Select the SINGLE closest MCC.
-
-Do NOT invent an MCC.
-
-Do NOT compare against MCCs outside this list.
+6. Before answering, verify that your selected_mcc exists in the candidate list.
 
 Return ONLY valid JSON.
-
-IMPORTANT:
-
-Do NOT generate a confidence score based on your own certainty.
-
-The confidence will be calculated later by the application using semantic agreement.
 
 Return EXACTLY:
 
