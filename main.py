@@ -16,7 +16,6 @@ def main():
         ).strip()
 
         if page_name.lower() == "exit":
-            print("\nGoodbye!")
             break
 
         result = classifier.classify(page_name)
@@ -25,37 +24,70 @@ def main():
 
         prediction = result["final_prediction"]
 
-        print()
+        print("\n")
+
         print("=" * 60)
         print("MODEL'S UNDERSTANDING")
         print("=" * 60)
 
-        print(f"Entity Name        : {entity.get('entity_name','')}")
-        print(f"Entity Type        : {entity.get('entity_type','')}")
-        print(f"Merchant Type      : {entity.get('merchant_type','')}")
-        print(f"Industry           : {entity.get('industry','')}")
-        print(f"Primary Business   : {entity.get('primary_business','')}")
+        print(
+            f"Entity Name        : {entity.get('entity_name','')}"
+        )
 
-        print()
+        print(
+            f"Entity Type        : {entity.get('entity_type','')}"
+        )
+
+        print(
+            f"Industry           : {entity.get('industry','')}"
+        )
+
+        print(
+            f"Primary Business   : {entity.get('primary_business','')}"
+        )
+
+        print("\n")
+
         print("=" * 60)
         print("MODEL'S INDEPENDENT MCC")
         print("=" * 60)
 
-        print(f"MCC                : {entity.get('predicted_mcc','')}")
-        print(f"Industry           : {entity.get('predicted_mcc_industry','')}")
-        print(f"Reason             : {entity.get('predicted_mcc_reason','')}")
+        print(
+            f"MCC                : {entity.get('predicted_mcc','')}"
+        )
 
-        print()
+        print(
+            f"Industry           : {entity.get('predicted_mcc_industry','')}"
+        )
+
+        print(
+            f"Reason             : {entity.get('predicted_mcc_reason','')}"
+        )
+
+        print("\n")
+
         print("=" * 60)
         print("FINAL MAPPED MCC")
         print("=" * 60)
 
-        print(f"MCC                : {prediction.get('selected_mcc','')}")
-        print(f"Industry           : {prediction.get('selected_industry','')}")
-        print(f"Reason             : {prediction.get('selected_reason','')}")
-        print(f"Confidence         : {prediction.get('confidence', 0)}%")
+        print(
+            f"MCC                : {prediction.get('selected_mcc','')}"
+        )
 
-        print()
+        print(
+            f"Industry           : {prediction.get('selected_industry','')}"
+        )
+
+        print(
+            f"Reason             : {prediction.get('selected_reason','')}"
+        )
+
+        print(
+            f"Confidence         : {prediction.get('confidence',0)}%"
+        )
+
+        print("\n")
+
         print("=" * 60)
 
 
