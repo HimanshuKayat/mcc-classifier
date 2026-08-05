@@ -1,5 +1,4 @@
 from scripts.classifier import MCCClassifier
-import json
 
 
 def main():
@@ -7,12 +6,14 @@ def main():
     classifier = MCCClassifier()
 
     print("=" * 60)
-    print("Wikipedia Entity Understanding")
+    print("Merchant Category Code (MCC) Classifier")
     print("=" * 60)
 
     while True:
 
-        page_name = input("\nEnter Wikipedia article title (or type 'exit'): ").strip()
+        page_name = input(
+            "\nEnter article/page name (or type 'exit'): "
+        ).strip()
 
         if page_name.lower() == "exit":
             print("\nGoodbye!")
@@ -20,9 +21,40 @@ def main():
 
         result = classifier.classify(page_name)
 
-        print("\nKnowledge Retrieved")
-        print("-" * 40)
-        print(json.dumps(result, indent=4))
+        entity = result["entity_profile"]
+
+        prediction = result["final_prediction"]
+
+        print("\n")
+        print("=" * 60)
+        print("MODEL'S UNDERSTANDING")
+        print("=" * 60)
+
+        print(f"Entity Type        : {entity.get('entity_type','')}")
+        print(f"Merchant Type      : {entity.get('merchant_type','')}")
+        print(f"Industry           : {entity.get('industry','')}")
+        print(f"Primary Business   : {entity.get('primary_business','')}")
+
+        print("\n")
+        print("=" * 60)
+        print("MODEL'S INDEPENDENT MCC")
+        print("=" * 60)
+
+        print(f"MCC                : {entity.get('predicted_mcc','')}")
+        print(f"Industry           : {entity.get('predicted_mcc_industry','')}")
+        print(f"Reason             : {entity.get('predicted_mcc_reason','')}")
+
+        print("\n")
+        print("=" * 60)
+        print("FINAL MAPPED MCC")
+        print("=" * 60)
+
+        print(f"MCC                : {prediction.get('selected_mcc','')}")
+        print(f"Industry           : {prediction.get('selected_industry','')}")
+        print(f"Reason             : {prediction.get('selected_reason','')}")
+
+        print("\n")
+        print("=" * 60)
 
 
 if __name__ == "__main__":
