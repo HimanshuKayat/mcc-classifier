@@ -9,10 +9,7 @@ class ConfidenceScorer:
 
     def _similarity(self, text1, text2):
 
-        text1 = str(text1).strip()
-        text2 = str(text2).strip()
-
-        if not text1 or not text2:
+        if not text1.strip() or not text2.strip():
             return 0.0
 
         embeddings = self.model.encode(
@@ -27,107 +24,117 @@ class ConfidenceScorer:
 
         return float(similarity)
 
+    #########################################################
+    # MODEL'S PREDICTED MCC PROFILE
+    #########################################################
+
+    def _predicted_profile(self, entity):
+
+        return f"""
+Entity Name:
+{entity.get("entity_name","")}
+
+Entity Type:
+{entity.get("entity_type","")}
+
+Primary Business:
+{entity.get("primary_business","")}
+
+Industry:
+{entity.get("industry","")}
+
+Predicted MCC:
+{entity.get("predicted_mcc","")}
+
+Predicted MCC Industry:
+{entity.get("predicted_mcc_industry","")}
+
+Predicted Reason:
+{entity.get("predicted_mcc_reason","")}
+"""
+
+    #########################################################
+    # RETRIEVED / FINAL MCC PROFILE
+    #########################################################
+
+    def _selected_profile(self, profile):
+
+        return f"""
+MCC:
+{profile.get("mcc","")}
+
+Industry:
+{profile.get("industry","")}
+
+Category:
+{profile.get("category","")}
+
+Description:
+{profile.get("description","")}
+
+Keywords:
+{' '.join(profile.get("keywords", []))}
+
+Aliases:
+{' '.join(profile.get("aliases", []))}
+"""
+
+    #########################################################
+    # FINAL CONFIDENCE
+    #########################################################
+
     def calculate(
         self,
         entity_profile,
         selected_profile
     ):
 
-        ##################################################
-        # MODEL'S INDEPENDENT UNDERSTANDING
-        ##################################################
-
-        predicted_industry = entity_profile.get(
-            "predicted_mcc_industry",
-            ""
+        predicted_text = self._predicted_profile(
+            entity_profile
         )
 
-        predicted_reason = entity_profile.get(
-            "predicted_mcc_reason",
-            ""
+        selected_text = self._selected_profile(
+            selected_profile
         )
 
-        ##################################################
-        # FINAL MAPPED MCC
-        ##################################################
-
-        selected_industry = selected_profile.get(
-            "industry",
-            ""
-        )
-
-        selected_description = selected_profile.get(
-            "description",
-            ""
-        )
-
-        ##################################################
-        # SEMANTIC AGREEMENT
-        ##################################################
-
-        industry_similarity = self._similarity(
-
-            predicted_industry,
-
-            selected_industry
-
-        )
-
-        reason_similarity = self._similarity(
-
-            predicted_reason,
-
-            selected_description
-
+        semantic_similarity = self._similarity(
+            predicted_text,
+            selected_text
         )
 
         retrieval_similarity = float(
-
             selected_profile.get(
                 "retrieval_score",
                 0.0
             )
-
         )
-
-        ##################################################
-        # FINAL CONFIDENCE
-        ##################################################
 
         confidence = (
 
-            industry_similarity * 0.40 +
-
-            reason_similarity * 0.40 +
+            semantic_similarity * 0.80 +
 
             retrieval_similarity * 0.20
 
         ) * 100
 
         confidence = max(
-            0.0,
+            0,
             min(
                 confidence,
-                100.0
+                100
             )
         )
 
-        ##################################################
-        # DEBUG
-        ##################################################
+        #################################################
 
         print("\n========== CONFIDENCE BREAKDOWN ==========\n")
 
         print(
-            f"Industry Similarity : {industry_similarity:.3f}"
+            f"Semantic Similarity : {semantic_similarity:.3f}"
         )
 
         print(
-            f"Reason Similarity   : {reason_similarity:.3f}"
-        )
-
-        print(
-            f"Retriever Score     : {retrieval_similarity:.3f}"
+            f"Retriever Similarity: {retrieval_similarity:.3f}"
         )
 
         print(
