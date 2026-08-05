@@ -38,6 +38,22 @@ class MCCClassifier:
         print("\n===========================================\n")
 
         ####################################################
+        # SHOW MODEL'S OWN MCC PREDICTION
+        ####################################################
+
+        print("\n========== MODEL'S INDEPENDENT MCC ==========\n")
+        print(
+            f"MCC       : {entity_profile.get('predicted_mcc','')}"
+        )
+        print(
+            f"Industry  : {entity_profile.get('predicted_mcc_industry','')}"
+        )
+        print(
+            f"Reason    : {entity_profile.get('predicted_mcc_reason','')}"
+        )
+        print("\n============================================\n")
+
+        ####################################################
         # STEP 2 : Retrieve Top MCC Candidates
         ####################################################
 
@@ -56,7 +72,7 @@ class MCCClassifier:
         print("\n=============================================\n")
 
         ####################################################
-        # STEP 3 : Final MCC Selection
+        # STEP 3 : Final MCC Mapping
         ####################################################
 
         mcc_prompt = self.mcc_prompt_builder.build_prompt(
@@ -70,4 +86,13 @@ class MCCClassifier:
         print(mcc_response)
         print("\n========================================\n")
 
-        return JSONParser.parse(mcc_response)
+        final_result = JSONParser.parse(mcc_response)
+
+        ####################################################
+        # RETURN BOTH RESULTS
+        ####################################################
+
+        return {
+            "entity_profile": entity_profile,
+            "final_prediction": final_result
+        }
