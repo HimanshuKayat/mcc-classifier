@@ -25,17 +25,18 @@ def main():
 
         prediction = result["final_prediction"]
 
-        print("\n")
+        print()
         print("=" * 60)
         print("MODEL'S UNDERSTANDING")
         print("=" * 60)
 
+        print(f"Entity Name        : {entity.get('entity_name','')}")
         print(f"Entity Type        : {entity.get('entity_type','')}")
         print(f"Merchant Type      : {entity.get('merchant_type','')}")
         print(f"Industry           : {entity.get('industry','')}")
         print(f"Primary Business   : {entity.get('primary_business','')}")
 
-        print("\n")
+        print()
         print("=" * 60)
         print("MODEL'S INDEPENDENT MCC")
         print("=" * 60)
@@ -44,7 +45,7 @@ def main():
         print(f"Industry           : {entity.get('predicted_mcc_industry','')}")
         print(f"Reason             : {entity.get('predicted_mcc_reason','')}")
 
-        print("\n")
+        print()
         print("=" * 60)
         print("FINAL MAPPED MCC")
         print("=" * 60)
@@ -52,8 +53,9 @@ def main():
         print(f"MCC                : {prediction.get('selected_mcc','')}")
         print(f"Industry           : {prediction.get('selected_industry','')}")
         print(f"Reason             : {prediction.get('selected_reason','')}")
+        print(f"Confidence         : {prediction.get('confidence', 0)}%")
 
-        print("\n")
+        print()
         print("=" * 60)
 
 
