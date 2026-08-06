@@ -90,6 +90,7 @@ class MCCClassifier:
         final_result = JSONParser.parse(
             mcc_response
         )
+        print(final_result)
         ####################################################
         # STEP 4 : ADD CONFIDENCE TO TOP 5 MCCs
         ####################################################
