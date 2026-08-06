@@ -1,4 +1,5 @@
 from scripts.classifier import MCCClassifier
+import json
 
 
 def main():
@@ -21,74 +22,33 @@ def main():
         result = classifier.classify(page_name)
 
         entity = result["entity_profile"]
-
         prediction = result["final_prediction"]
 
-        print("\n")
+        output = {
+            "entity_name": entity.get("entity_name", ""),
+            "entity_type": entity.get("entity_type", ""),
+            "summary": entity.get("summary", ""),
+            "primary_business": entity.get("primary_business", ""),
+            "industry": entity.get("industry", ""),
+            "products_services": entity.get("products_services", []),
+            "target_customers": entity.get("target_customers", []),
+            "business_model": entity.get("business_model", ""),
+            "parent_company": entity.get("parent_company", ""),
+            "country": entity.get("country", ""),
+            "keywords": entity.get("keywords", []),
+            "aliases": [],
 
-        print("=" * 60)
-        print("MODEL'S UNDERSTANDING")
-        print("=" * 60)
-
-        print(
-            f"Entity Name        : {entity.get('entity_name','')}"
-        )
-
-        print(
-            f"Entity Type        : {entity.get('entity_type','')}"
-        )
-
-        print(
-            f"Industry           : {entity.get('industry','')}"
-        )
-
-        print(
-            f"Primary Business   : {entity.get('primary_business','')}"
-        )
-
-        print("\n")
-
-        print("=" * 60)
-        print("MODEL'S INDEPENDENT MCC")
-        print("=" * 60)
-
-        print(
-            f"MCC                : {entity.get('predicted_mcc','')}"
-        )
-
-        print(
-            f"Industry           : {entity.get('predicted_mcc_industry','')}"
-        )
-
-        print(
-            f"Reason             : {entity.get('predicted_mcc_reason','')}"
-        )
+            "final_mapped_mcc": {
+                "mcc": prediction.get("selected_mcc", ""),
+                "industry": prediction.get("selected_industry", ""),
+                "reason": prediction.get("selected_reason", ""),
+                "confidence": prediction.get("confidence", 0)
+            }
+        }
 
         print("\n")
-
-        print("=" * 60)
-        print("FINAL MAPPED MCC")
-        print("=" * 60)
-
-        print(
-            f"MCC                : {prediction.get('selected_mcc','')}"
-        )
-
-        print(
-            f"Industry           : {prediction.get('selected_industry','')}"
-        )
-
-        print(
-            f"Reason             : {prediction.get('selected_reason','')}"
-        )
-
-        print(
-            f"Confidence         : {prediction.get('confidence',0)}%"
-        )
-
+        print(json.dumps(output, indent=4, ensure_ascii=False))
         print("\n")
-
-        print("=" * 60)
 
 
 if __name__ == "__main__":
