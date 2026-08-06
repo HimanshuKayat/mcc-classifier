@@ -125,22 +125,4 @@ Aliases:
             )
         )
 
-        #################################################
-
-        print("\n========== CONFIDENCE BREAKDOWN ==========\n")
-
-        print(
-            f"Semantic Similarity : {semantic_similarity:.3f}"
-        )
-
-        print(
-            f"Retriever Similarity: {retrieval_similarity:.3f}"
-        )
-
-        print(
-            f"Final Confidence    : {confidence:.2f}%"
-        )
-
-        print("\n==========================================\n")
-
         return round(confidence, 2)
