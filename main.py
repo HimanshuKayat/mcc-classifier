@@ -36,19 +36,20 @@ def main():
             "parent_company": entity.get("parent_company", ""),
             "country": entity.get("country", ""),
             "keywords": entity.get("keywords", []),
-            "aliases": [],
-
-            "final_mapped_mcc": {
-                "mcc": prediction.get("selected_mcc", ""),
-                "industry": prediction.get("selected_industry", ""),
-                "reason": prediction.get("selected_reason", ""),
-                "confidence": prediction.get("confidence", 0)
-            }
+            "aliases": entity.get("aliases", []),
+            "top_5_mcc_predictions": prediction.get(
+                "top_5_mcc_predictions",
+                []
+            )
         }
 
-        print("\n")
-        print(json.dumps(output, indent=4, ensure_ascii=False))
-        print("\n")
+        print()
+        print(json.dumps(
+            output,
+            indent=4,
+            ensure_ascii=False
+        ))
+        print()
 
 
 if __name__ == "__main__":
