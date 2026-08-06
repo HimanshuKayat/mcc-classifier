@@ -1,5 +1,5 @@
 from copy import deepcopy
-
+import json
 from models.llama_model import LlamaModel
 from prompts.entity_prompt import EntityPromptBuilder
 from prompts.mcc_prompt import MCCPromptBuilder
@@ -32,7 +32,6 @@ class MCCClassifier:
 
         entity_prompt = self.entity_prompt_builder.build_prompt(
             page_name
-        import json
 
         entity_profile = None
 
