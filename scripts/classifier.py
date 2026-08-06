@@ -38,6 +38,13 @@ class MCCClassifier:
             entity_prompt
         )
 
+        # DEBUG: Print raw response before parsing
+        print("\n" + "=" * 80)
+        print("RAW ENTITY RESPONSE")
+        print("=" * 80)
+        print(entity_response)
+        print("=" * 80 + "\n")
+
         entity_profile = JSONParser.parse(
             entity_response
         )
@@ -87,10 +94,17 @@ class MCCClassifier:
             mcc_prompt
         )
 
+        # DEBUG: Print raw MCC response before parsing
+        print("\n" + "=" * 80)
+        print("RAW MCC RESPONSE")
+        print("=" * 80)
+        print(mcc_response)
+        print("=" * 80 + "\n")
+
         final_result = JSONParser.parse(
             mcc_response
         )
-        print(final_result)
+
         ####################################################
         # STEP 4 : ADD CONFIDENCE TO TOP 5 MCCs
         ####################################################
@@ -99,6 +113,11 @@ class MCCClassifier:
             "top_5_mcc_predictions",
             []
         )
+
+        if not predictions:
+            raise ValueError(
+                "Model did not return 'top_5_mcc_predictions'."
+            )
 
         for prediction in predictions:
 
@@ -114,6 +133,10 @@ class MCCClassifier:
                     break
 
             if selected_profile is None:
+
+                print("\nRetrieved MCCs:")
+                for profile in candidates:
+                    print(profile["mcc"])
 
                 raise ValueError(
                     f"\nModel selected MCC "
