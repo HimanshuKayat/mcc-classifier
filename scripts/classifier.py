@@ -38,45 +38,17 @@ class MCCClassifier:
             entity_prompt
         )
 
-        print("\n========== ENTITY UNDERSTANDING ==========\n")
-        print(entity_response)
-        print("\n==========================================\n")
-
         entity_profile = JSONParser.parse(
             entity_response
         )
-
-        print("\n========== PARSED ENTITY PROFILE ==========\n")
-        print(entity_profile)
-        print("\n===========================================\n")
-
-        ####################################################
-        # MODEL'S INDEPENDENT MCC
-        ####################################################
-
-        if entity_profile.get("predicted_mcc"):
-
-            print("\n========== MODEL'S INDEPENDENT MCC ==========\n")
-
-            print(
-                f"MCC       : {entity_profile.get('predicted_mcc','')}"
-            )
-
-            print(
-                f"Industry  : {entity_profile.get('predicted_mcc_industry','')}"
-            )
-
-            print(
-                f"Reason    : {entity_profile.get('predicted_mcc_reason','')}"
-            )
-
-            print("\n============================================\n")
 
         ####################################################
         # CREATE CLEAN PROFILE FOR MAPPING
         ####################################################
 
-        entity_for_mapping = deepcopy(entity_profile)
+        entity_for_mapping = deepcopy(
+            entity_profile
+        )
 
         entity_for_mapping.pop(
             "predicted_mcc",
@@ -102,16 +74,6 @@ class MCCClassifier:
             top_k=20
         )
 
-        print("\n========== RETRIEVED MCC CANDIDATES ==========\n")
-
-        for item in candidates:
-
-            print(
-                f"{item['mcc']} - {item['industry']}"
-            )
-
-        print("\n=============================================\n")
-
         ####################################################
         # STEP 3 : FINAL MCC SELECTION
         ####################################################
@@ -125,58 +87,48 @@ class MCCClassifier:
             mcc_prompt
         )
 
-        print("\n========== FINAL MCC RESPONSE ==========\n")
-        print(mcc_response)
-        print("\n========================================\n")
-
         final_result = JSONParser.parse(
             mcc_response
         )
-
         ####################################################
-        # FIND SELECTED PROFILE
-        ####################################################
-
-        selected_profile = None
-
-        for profile in candidates:
-
-            if str(profile["mcc"]) == str(
-                final_result.get("selected_mcc")
-            ):
-
-                selected_profile = profile
-                break
-
-        ####################################################
-        # INVALID MCC
+        # STEP 4 : ADD CONFIDENCE TO TOP 5 MCCs
         ####################################################
 
-        if selected_profile is None:
-
-            raise ValueError(
-                f"\nModel selected MCC "
-                f"{final_result.get('selected_mcc')} "
-                f"which is not present in the retrieved candidates."
-            )
-
-        ####################################################
-        # STEP 4 : CONFIDENCE
-        ####################################################
-
-        confidence = self.confidence.calculate(
-
-            entity_profile=entity_profile,
-
-            selected_profile=selected_profile
-
+        predictions = final_result.get(
+            "top_5_mcc_predictions",
+            []
         )
 
-        final_result["confidence"] = confidence
+        for prediction in predictions:
 
-        print("\n========== CONFIDENCE ==========\n")
-        print(f"Confidence : {confidence}%")
-        print("\n================================\n")
+            selected_profile = None
+
+            for profile in candidates:
+
+                if str(profile["mcc"]) == str(
+                    prediction.get("mcc")
+                ):
+
+                    selected_profile = profile
+                    break
+
+            if selected_profile is None:
+
+                raise ValueError(
+                    f"\nModel selected MCC "
+                    f"{prediction.get('mcc')} "
+                    f"which is not present in the retrieved candidates."
+                )
+
+            confidence = self.confidence.calculate(
+
+                entity_profile=entity_profile,
+
+                selected_profile=selected_profile
+
+            )
+
+            prediction["confidence"] = confidence
 
         ####################################################
         # RETURN
