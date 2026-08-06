@@ -1,7 +1,3 @@
-import json
-import re
-
-
 class JSONParser:
 
     @staticmethod
@@ -10,13 +6,47 @@ class JSONParser:
         if not response:
             raise ValueError("LLM returned an empty response.")
 
-        response = response.strip()
+        profile = {}
 
-        response = response.replace("```json", "").replace("```", "").strip()
+        list_fields = {
+            "products_services",
+            "target_customers",
+            "keywords",
+            "aliases"
+        }
 
-        match = re.search(r"\{.*\}", response, re.DOTALL)
+        for line in response.splitlines():
 
-        if not match:
-            raise ValueError(f"No JSON object found.\n\nLLM Response:\n{response}")
+            line = line.strip()
 
-        return json.loads(match.group())
+            if not line:
+                continue
+
+            if ":" not in line:
+                continue
+
+            key, value = line.split(":", 1)
+
+            key = key.strip()
+
+            value = value.strip()
+
+            if key in list_fields:
+
+                if value:
+
+                    profile[key] = [
+                        item.strip()
+                        for item in value.split("|")
+                        if item.strip()
+                    ]
+
+                else:
+
+                    profile[key] = []
+
+            else:
+
+                profile[key] = value
+
+        return profile
