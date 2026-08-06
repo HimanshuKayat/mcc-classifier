@@ -30,8 +30,9 @@ class MCCClassifier:
         # STEP 1 : ENTITY UNDERSTANDING
         ####################################################
 
-        entity_prompt = self.entity_prompt_builder.build_prompt(
+                entity_prompt = self.entity_prompt_builder.build_prompt(
             page_name
+        )
 
         entity_profile = None
 
@@ -39,22 +40,22 @@ class MCCClassifier:
 
             entity_response = self.model.generate(
                 entity_prompt
-    )
+            )
 
-        try:
+            try:
 
-            entity_profile = JSONParser.parse(
-                entity_response
-        )
+                entity_profile = JSONParser.parse(
+                    entity_response
+                )
 
-        break
+                break
 
-        except json.JSONDecodeError:
+            except json.JSONDecodeError:
 
-        if attempt == 1:
-            raise
+                if attempt == 1:
+                    raise
 
-        print("Invalid JSON returned by model. Retrying...")
+                print("Invalid JSON returned by model. Retrying...")
 
         ####################################################
         # CREATE CLEAN PROFILE FOR MAPPING
