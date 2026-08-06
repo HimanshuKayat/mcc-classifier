@@ -30,7 +30,7 @@ class MCCClassifier:
         # STEP 1 : ENTITY UNDERSTANDING
         ####################################################
 
-                entity_prompt = self.entity_prompt_builder.build_prompt(
+        entity_prompt = self.entity_prompt_builder.build_prompt(
             page_name
         )
 
@@ -50,12 +50,12 @@ class MCCClassifier:
 
                 break
 
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, ValueError):
 
                 if attempt == 1:
                     raise
 
-                print("Invalid JSON returned by model. Retrying...")
+                print(f"Attempt {attempt + 1}: Invalid JSON. Retrying...")
 
         ####################################################
         # CREATE CLEAN PROFILE FOR MAPPING
@@ -98,13 +98,28 @@ class MCCClassifier:
             candidates
         )
 
-        mcc_response = self.model.generate(
-            mcc_prompt
-        )
+        final_result = None
 
-        final_result = JSONParser.parse(
-            mcc_response
-        )
+        for attempt in range(2):
+
+            mcc_response = self.model.generate(
+                mcc_prompt
+            )
+
+            try:
+
+                final_result = JSONParser.parse(
+                    mcc_response
+                )
+
+                break
+
+            except json.JSONDecodeError:
+
+                if attempt == 1:
+                    raise
+
+                print("Invalid JSON returned by model. Retrying...")
 
         ####################################################
         # STEP 4 : ADD CONFIDENCE TO TOP 5 MCCs
