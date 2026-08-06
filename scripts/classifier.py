@@ -38,13 +38,6 @@ class MCCClassifier:
             entity_prompt
         )
 
-        # DEBUG: Print raw response before parsing
-        print("\n" + "=" * 80)
-        print("RAW ENTITY RESPONSE")
-        print("=" * 80)
-        print(entity_response)
-        print("=" * 80 + "\n")
-
         entity_profile = JSONParser.parse(
             entity_response
         )
@@ -94,13 +87,6 @@ class MCCClassifier:
             mcc_prompt
         )
 
-        # DEBUG: Print raw MCC response before parsing
-        print("\n" + "=" * 80)
-        print("RAW MCC RESPONSE")
-        print("=" * 80)
-        print(mcc_response)
-        print("=" * 80 + "\n")
-
         final_result = JSONParser.parse(
             mcc_response
         )
@@ -115,6 +101,7 @@ class MCCClassifier:
         )
 
         if not predictions:
+
             raise ValueError(
                 "Model did not return 'top_5_mcc_predictions'."
             )
@@ -134,12 +121,8 @@ class MCCClassifier:
 
             if selected_profile is None:
 
-                print("\nRetrieved MCCs:")
-                for profile in candidates:
-                    print(profile["mcc"])
-
                 raise ValueError(
-                    f"\nModel selected MCC "
+                    f"Model selected MCC "
                     f"{prediction.get('mcc')} "
                     f"which is not present in the retrieved candidates."
                 )
