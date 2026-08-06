@@ -45,31 +45,61 @@ Also provide:
 - predicted_mcc_industry
 - predicted_mcc_reason
 
-This prediction must be completely independent and must NOT
-assume any external MCC list has been provided.
-
 ---------------------------------------------------------
 
-Return ONLY valid JSON.
+IMPORTANT OUTPUT FORMAT
 
-{{
-    "entity_name": "",
-    "entity_type": "",
-    "summary": "",
-    "primary_business": "",
-    "industry": "",
-    "products_services": [],
-    "target_customers": [],
-    "business_model": "",
-    "parent_company": "",
-    "country": "",
-    "keywords": [],
-    "aliases": [],
+Return ONLY the following key-value format.
 
-    "predicted_mcc": "",
-    "predicted_mcc_industry": "",
-    "predicted_mcc_reason": ""
-}}
+Do NOT return JSON.
+
+Do NOT use markdown.
+
+Do NOT use bullet points.
+
+Each field must appear on exactly one line.
+
+For list fields, separate values using the "|" character.
+
+If a field is unknown, leave it blank.
+
+Output exactly in this format:
+
+entity_name:
+entity_type:
+summary:
+primary_business:
+industry:
+products_services:
+target_customers:
+business_model:
+parent_company:
+country:
+keywords:
+aliases:
+predicted_mcc:
+predicted_mcc_industry:
+predicted_mcc_reason:
+
+Example:
+
+entity_name: Netflix
+entity_type: Entertainment Company
+summary: American streaming media company.
+primary_business: Streaming media
+industry: Media and Entertainment
+products_services: Streaming Services | Original Content
+target_customers: Individuals | Households
+business_model: Subscription-based
+parent_company:
+country: United States
+keywords: Netflix | Streaming | Entertainment | Movies
+aliases:
+predicted_mcc: 5961
+predicted_mcc_industry: Telecommunications Services
+predicted_mcc_reason: Streaming media subscription service.
+
+Return ONLY the key-value pairs.
 """
 
         return prompt
