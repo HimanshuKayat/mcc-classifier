@@ -32,15 +32,30 @@ class MCCClassifier:
 
         entity_prompt = self.entity_prompt_builder.build_prompt(
             page_name
+        import json
+
+        entity_profile = None
+
+        for attempt in range(2):
+
+            entity_response = self.model.generate(
+                entity_prompt
+    )
+
+        try:
+
+            entity_profile = JSONParser.parse(
+                entity_response
         )
 
-        entity_response = self.model.generate(
-            entity_prompt
-        )
+        break
 
-        entity_profile = JSONParser.parse(
-            entity_response
-        )
+        except json.JSONDecodeError:
+
+        if attempt == 1:
+            raise
+
+        print("Invalid JSON returned by model. Retrying...")
 
         ####################################################
         # CREATE CLEAN PROFILE FOR MAPPING
