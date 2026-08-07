@@ -1,7 +1,5 @@
 from scripts.classifier import MCCClassifier
 import pandas as pd
-import json
-
 
 def main():
 
@@ -47,9 +45,7 @@ def main():
 
         instance_of = "" if pd.isna(row["instance_of"]) else str(row["instance_of"]).strip()
 
-        print(
-            f"\n[{index + 1}/{total}] Processing: {article_name}"
-        )
+        print(f"\n[{index + 1}/{total}] Processing: {article_name}")
 
         try:
 
@@ -61,41 +57,48 @@ def main():
 
             )
 
-            entity = result["entity_profile"]
+            ####################################################
+            # GET RESULTS
+            ####################################################
+
+            entity_profile = result["entity_profile"]
 
             entity_response = result["entity_response"]
 
-            prediction = result["final_prediction"]
+            final_prediction = result["final_prediction"]
 
             mcc_response = result["mcc_response"]
 
             ####################################################
-            # STORE ENTITY PROFILE
+            # PRINT ENTITY PROFILE
             ####################################################
 
-            df.at[index, "entity_profile"] = json.dumps(
-
-                entity,
-
-                indent=4,
-
-                ensure_ascii=False
-
-            )
+            print("\n" + "=" * 80)
+            print("ENTITY PROFILE")
+            print("=" * 80)
+            print(entity_response)
 
             ####################################################
-            # STORE COMPLETE MCC RESULT
+            # PRINT MCC RESULT
             ####################################################
 
-            df.at[index, "mcc_predictions"] = json.dumps(
+            print("\n" + "=" * 80)
+            print("TOP 5 MCC PREDICTIONS")
+            print("=" * 80)
+            print(mcc_response)
+            print("=" * 80)
 
-                prediction,
+            ####################################################
+            # SAVE RAW ENTITY RESPONSE
+            ####################################################
 
-                indent=4,
+            df.at[index, "entity_profile"] = entity_response
 
-                ensure_ascii=False
+            ####################################################
+            # SAVE RAW MCC RESPONSE
+            ####################################################
 
-            )
+            df.at[index, "mcc_predictions"] = mcc_response
 
             ####################################################
             # STATUS
