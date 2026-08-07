@@ -24,14 +24,19 @@ class MCCClassifier:
             self.retriever.model
         )
 
-    def classify(self, page_name: str):
+    def classify(
+    self,
+    article_name: str,
+    instance_of: str = ""
+    ):
 
         ####################################################
         # STEP 1 : ENTITY UNDERSTANDING
         ####################################################
 
         entity_prompt = self.entity_prompt_builder.build_prompt(
-            page_name
+            article_name,
+            instance_of
         )
 
         entity_profile = None
