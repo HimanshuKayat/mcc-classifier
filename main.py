@@ -63,7 +63,11 @@ def main():
 
             entity = result["entity_profile"]
 
+            entity_response = result["entity_response"]
+
             prediction = result["final_prediction"]
+
+            mcc_response = result["mcc_response"]
 
             ####################################################
             # STORE ENTITY PROFILE
