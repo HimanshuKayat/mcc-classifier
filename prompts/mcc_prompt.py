@@ -7,48 +7,45 @@ class MCCPromptBuilder:
 
         entity_json = json.dumps(
             entity_profile,
-            indent=4,
+            indent=2,
             ensure_ascii=False
         )
 
-        mcc_text = ""
+        candidates = ""
 
         for item in candidate_mccs:
 
-            mcc_text += (
-                f"MCC: {item.get('mcc', '')}\n"
-                f"Industry: {item.get('industry', '')}\n"
-                f"Category: {item.get('category', '')}\n"
-                f"Description: {item.get('description', '')}\n"
-                "----------------------------------------\n"
+            candidates += (
+                f"MCC: {item['mcc']}\n"
+                f"Industry: {item['industry']}\n"
+                f"Category: {item['category']}\n"
+                f"Description: {item['description']}\n"
+                f"Keywords: {', '.join(item.get('keywords', []))}\n"
+                "--------------------------------------------------\n"
             )
 
-        prompt = f"""
-You are an expert Merchant Category Code (MCC) classifier.
+        return f"""
+You are an expert Visa/Mastercard Merchant Category Code classifier.
 
-Entity Profile:
+ENTITY
 
 {entity_json}
 
-Candidate MCCs:
+AVAILABLE MCC CANDIDATES
 
-{mcc_text}
+{candidates}
 
-Task:
+Instructions
 
-Choose the FIVE MCCs whose merchant activity best matches the entity.
-
-Rules:
-
-- Use semantic meaning.
-- Do not use keyword matching alone.
-- Only choose from the candidate MCCs.
-- Do not repeat an MCC.
-- Rank from best to worst.
-- Give a short reason for each choice.
+- Choose ONLY from the MCC candidates above.
+- Never invent an MCC.
+- Never repeat an MCC.
+- Rank the FIVE best semantic matches.
+- Match the commercial activity, not keywords.
+- Ignore word overlap.
 - Return ONLY valid JSON.
 
-Return exactly:
+Output format
 
 {{
   "top_5_mcc_predictions": [
@@ -85,5 +82,3 @@ Return exactly:
   ]
 }}
 """
-
-        return prompt
