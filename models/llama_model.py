@@ -22,8 +22,6 @@ class LlamaModel:
 
             "stream": False,
 
-            "format": "json",
-
             "options": {
 
                 "temperature": 0,
