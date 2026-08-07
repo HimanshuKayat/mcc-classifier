@@ -12,12 +12,10 @@ class EmbeddingRetriever:
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     ):
 
-        # Load embedding model
         self.model = SentenceTransformer(
             model_name
         )
 
-        # Load precomputed MCC embeddings
         with open(
             embedding_file,
             "rb"
@@ -44,7 +42,7 @@ class EmbeddingRetriever:
         )
 
         ####################################################
-        # CREATE QUERY EMBEDDING
+        # CREATE EMBEDDING
         ####################################################
 
         query_embedding = self.model.encode(
@@ -56,7 +54,7 @@ class EmbeddingRetriever:
         )
 
         ####################################################
-        # COMPUTE COSINE SIMILARITY
+        # COSINE SIMILARITY
         ####################################################
 
         similarities = cosine_similarity(
@@ -68,7 +66,7 @@ class EmbeddingRetriever:
         )[0]
 
         ####################################################
-        # SORT MCCs
+        # SORT
         ####################################################
 
         ranked = sorted(
@@ -109,7 +107,27 @@ class EmbeddingRetriever:
         profile
     ):
 
-        products = " | ".join(
+        primary_business = profile.get(
+            "primary_business",
+            ""
+        )
+
+        industry = profile.get(
+            "industry",
+            ""
+        )
+
+        entity_type = profile.get(
+            "entity_type",
+            ""
+        )
+
+        instance_of = profile.get(
+            "instance_of",
+            ""
+        )
+
+        products = " ".join(
 
             profile.get(
                 "products_services",
@@ -118,16 +136,7 @@ class EmbeddingRetriever:
 
         )
 
-        customers = " | ".join(
-
-            profile.get(
-                "target_customers",
-                []
-            )
-
-        )
-
-        keywords = " | ".join(
+        keywords = " ".join(
 
             profile.get(
                 "keywords",
@@ -136,52 +145,11 @@ class EmbeddingRetriever:
 
         )
 
-        aliases = " | ".join(
-
-            profile.get(
-                "aliases",
-                []
-            )
-
+        return (
+            f"{primary_business}. "
+            f"{industry}. "
+            f"{entity_type}. "
+            f"{instance_of}. "
+            f"{products}. "
+            f"{keywords}."
         )
-
-        return f"""
-Primary Business:
-{profile.get("primary_business", "")}
-
-Primary Business:
-{profile.get("primary_business", "")}
-
-Industry:
-{profile.get("industry", "")}
-
-Industry:
-{profile.get("industry", "")}
-
-Entity Type:
-{profile.get("entity_type", "")}
-
-Instance Of:
-{profile.get("instance_of", "")}
-
-Products and Services:
-{products}
-
-Products and Services:
-{products}
-
-Business Model:
-{profile.get("business_model", "")}
-
-Target Customers:
-{customers}
-
-Keywords:
-{keywords}
-
-Keywords:
-{keywords}
-
-Aliases:
-{aliases}
-"""
