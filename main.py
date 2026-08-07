@@ -69,17 +69,15 @@ def main():
             # STORE ENTITY PROFILE
             ####################################################
 
-            entity_text = ""
+            df.at[index, "entity_profile"] = json.dumps(
 
-            for key, value in entity.items():
+                entity,
 
-                if isinstance(value, list):
+                indent=4,
 
-                    value = " | ".join(value)
+                ensure_ascii=False
 
-                entity_text += f"{key}: {value}\n"
-
-            df.at[index, "entity_profile"] = entity_text.strip()
+            )
 
             ####################################################
             # STORE COMPLETE MCC RESULT
