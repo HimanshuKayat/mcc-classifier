@@ -6,8 +6,8 @@ class EntityPromptBuilder:
         instance_of: str = ""
     ):
 
-        prompt = f"""
-You are an expert at identifying real-world entities.
+        return f"""
+You are an expert at identifying the primary semantic identity of a real-world entity.
 
 Article:
 {article_name}
@@ -15,38 +15,50 @@ Article:
 Instance Of:
 {instance_of}
 
-Identify the entity's PRIMARY real-world commercial identity.
+Your task is NOT to predict an MCC.
 
-Rules:
+Your task is to create a concise semantic profile that will later be used to retrieve the most relevant Merchant Category Codes.
 
-- Use the article title and Instance Of together.
-- Instance Of is only supporting context.
-- Do NOT explain.
-- Do NOT write sentences.
-- Do NOT use markdown.
-- Do NOT output JSON.
-- Output ONLY the fields below.
+Rules
+
+- Use both the Article and Instance Of.
+- Focus on the PRIMARY identity only.
+- Do not describe history or achievements.
+- Do not explain your reasoning.
+- Do not output JSON.
+- Do not output markdown.
 - Every field must appear exactly once.
 - Leave unknown fields blank.
-- Separate multiple values using |
+- Multiple values must be separated using |
 
-For PEOPLE:
-Return their profession, not their investments or businesses.
+Guidelines
+
+People:
+Return their profession and the commercial activity people associate with them.
 
 Examples:
-Cristiano Ronaldo -> Football Player
-Taylor Swift -> Singer
-Tim Cook -> Business Executive
-Christopher Nolan -> Film Director
+Cristiano Ronaldo → Professional Football Player
+Taylor Swift → Singer and Performer
+Christopher Nolan → Film Director
 
-For PLACES:
-Return the dominant commercial activity.
+Companies:
+Return the primary business activity.
 
-For COMPANIES:
-Return the primary business.
+Countries:
+Return the dominant economic and commercial identity.
 
-For MOVIES / BOOKS / MUSIC / GAMES:
-Return how consumers purchase or access them.
+Movies / TV / Books / Games / Music:
+Return how consumers access or purchase them.
+
+Historical Figures:
+Return the role for which they are primarily known.
+
+Political Events / Wars / Lists:
+Return the main real-world category.
+
+Keywords:
+Use 5–10 high-value semantic keywords.
+Avoid generic words.
 
 Output exactly:
 
@@ -59,9 +71,4 @@ target_customers:
 country:
 keywords:
 aliases:
-predicted_mcc:
-predicted_mcc_industry:
-predicted_mcc_reason:
 """
-
-        return prompt
