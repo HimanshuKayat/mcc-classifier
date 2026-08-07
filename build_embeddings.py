@@ -8,27 +8,60 @@ MODEL_NAME = "BAAI/bge-large-en-v1.5"
 
 def profile_to_text(profile):
 
-    mcc = profile.get("mcc", "")
-    industry = profile.get("industry", "")
-    category = profile.get("category", "")
-    description = profile.get("description", "")
+    parts = []
 
-    keywords = ", ".join(
-        profile.get("keywords", [])
+    ####################################################
+    # HIGHEST PRIORITY
+    ####################################################
+
+    if profile.get("industry"):
+        parts.append(profile["industry"])
+
+    if profile.get("category"):
+        parts.append(profile["category"])
+
+    if profile.get("description"):
+        parts.append(profile["description"])
+
+    ####################################################
+    # KEYWORDS
+    ####################################################
+
+    keywords = profile.get(
+        "keywords",
+        []
     )
 
-    aliases = ", ".join(
-        profile.get("aliases", [])
+    if keywords:
+
+        parts.append(
+            ", ".join(keywords)
+        )
+
+    ####################################################
+    # ALIASES
+    ####################################################
+
+    aliases = profile.get(
+        "aliases",
+        []
     )
 
-    return (
-        f"MCC {mcc}. "
-        f"Industry: {industry}. "
-        f"Category: {category}. "
-        f"Business: {description}. "
-        f"Keywords: {keywords}. "
-        f"Aliases: {aliases}."
+    if aliases:
+
+        parts.append(
+            ", ".join(aliases)
+        )
+
+    ####################################################
+    # MCC NUMBER (Lowest Importance)
+    ####################################################
+
+    parts.append(
+        f"MCC {profile['mcc']}"
     )
+
+    return " | ".join(parts)
 
 
 def main():
@@ -43,7 +76,6 @@ def main():
 
     with open(
         "data/mcc_codes.json",
-        "r",
         encoding="utf-8"
     ) as f:
 
@@ -74,8 +106,11 @@ def main():
     )
 
     with open(
+
         "data/mcc_embeddings.pkl",
+
         "wb"
+
     ) as f:
 
         pickle.dump(
@@ -93,9 +128,11 @@ def main():
         )
 
     print()
-    print("Done!")
+
+    print("Done.")
+
     print(
-        f"Saved {len(profiles)} embeddings to data/mcc_embeddings.pkl"
+        f"Saved {len(profiles)} embeddings."
     )
 
 
