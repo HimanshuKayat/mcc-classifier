@@ -1,4 +1,5 @@
 from scripts.classifier import MCCClassifier
+import pandas as pd
 import json
 
 
@@ -10,47 +11,131 @@ def main():
     print("Merchant Category Code (MCC) Classifier")
     print("=" * 60)
 
-    while True:
+    ####################################################
+    # LOAD INPUT EXCEL
+    ####################################################
 
-        page_name = input(
-            "\nEnter article/page name (or type 'exit'): "
-        ).strip()
+    input_file = "articles_metadata.xlsx"
 
-        if page_name.lower() == "exit":
-            break
+    df = pd.read_excel(input_file)
 
-        result = classifier.classify(page_name)
+    ####################################################
+    # ADD OUTPUT COLUMNS
+    ####################################################
 
-        entity = result["entity_profile"]
-        prediction = result["final_prediction"]
+    if "entity_profile" not in df.columns:
+        df["entity_profile"] = ""
 
-        output = {
-            "entity_name": entity.get("entity_name", ""),
-            "entity_type": entity.get("entity_type", ""),
-            "summary": entity.get("summary", ""),
-            "primary_business": entity.get("primary_business", ""),
-            "industry": entity.get("industry", ""),
-            "products_services": entity.get("products_services", []),
-            "target_customers": entity.get("target_customers", []),
-            "business_model": entity.get("business_model", ""),
-            "parent_company": entity.get("parent_company", ""),
-            "country": entity.get("country", ""),
-            "keywords": entity.get("keywords", []),
-            "aliases": entity.get("aliases", []),
-            "top_5_mcc_predictions": prediction.get(
-                "top_5_mcc_predictions",
-                []
+    if "mcc_predictions" not in df.columns:
+        df["mcc_predictions"] = ""
+
+    if "status" not in df.columns:
+        df["status"] = ""
+
+    if "error" not in df.columns:
+        df["error"] = ""
+
+    ####################################################
+    # PROCESS EACH ROW
+    ####################################################
+
+    total = len(df)
+
+    for index, row in df.iterrows():
+
+        article_name = str(row["article"]).strip()
+
+        instance_of = str(row["instance_of"]).strip()
+
+        print(
+            f"\n[{index + 1}/{total}] Processing: {article_name}"
+        )
+
+        try:
+
+            result = classifier.classify(
+
+                article_name,
+
+                instance_of
+
             )
-        }
 
-        print()
-        print(json.dumps(
-            output,
-            indent=4,
-            ensure_ascii=False
-        ))
-        print()
+            entity = result["entity_profile"]
+
+            prediction = result["final_prediction"]
+
+            ####################################################
+            # STORE ENTITY PROFILE
+            ####################################################
+
+            entity_text = ""
+
+            for key, value in entity.items():
+
+                if isinstance(value, list):
+
+                    value = " | ".join(value)
+
+                entity_text += f"{key}: {value}\n"
+
+            df.at[index, "entity_profile"] = entity_text.strip()
+
+            ####################################################
+            # STORE COMPLETE MCC RESULT
+            ####################################################
+
+            df.at[index, "mcc_predictions"] = json.dumps(
+
+                prediction,
+
+                indent=4,
+
+                ensure_ascii=False
+
+            )
+
+            ####################################################
+            # STATUS
+            ####################################################
+
+            df.at[index, "status"] = "Success"
+
+            df.at[index, "error"] = ""
+
+        except Exception as e:
+
+            print(f"Failed: {article_name}")
+
+            print(str(e))
+
+            df.at[index, "status"] = "Failed"
+
+            df.at[index, "error"] = str(e)
+
+    ####################################################
+    # SAVE OUTPUT
+    ####################################################
+
+    output_file = "articles_metadata_output.xlsx"
+
+    df.to_excel(
+
+        output_file,
+
+        index=False
+
+    )
+
+    print("\n" + "=" * 60)
+
+    print("Processing Complete")
+
+    print(f"Output saved to: {output_file}")
+
+    print("=" * 60)
 
 
 if __name__ == "__main__":
+
     main()
