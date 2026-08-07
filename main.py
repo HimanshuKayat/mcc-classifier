@@ -45,7 +45,9 @@ def main():
 
         instance_of = "" if pd.isna(row["instance_of"]) else str(row["instance_of"]).strip()
 
-        print(f"\n[{index + 1}/{total}] Processing: {article_name}")
+        print(
+            f"\n[{index + 1}/{total}] Processing: {article_name}"
+        )
 
         try:
 
@@ -89,7 +91,7 @@ def main():
             print("=" * 80)
 
             ####################################################
-            # SAVE RAW ENTITY RESPONSE
+            # SAVE RAW ENTITY PROFILE
             ####################################################
 
             df.at[index, "entity_profile"] = entity_response
