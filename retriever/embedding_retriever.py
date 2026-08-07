@@ -9,7 +9,7 @@ class EmbeddingRetriever:
     def __init__(
         self,
         embedding_file="data/mcc_embeddings.pkl",
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
+        model_name="BAAI/bge-large-en-v1.5"
     ):
 
         self.model = SentenceTransformer(model_name)
