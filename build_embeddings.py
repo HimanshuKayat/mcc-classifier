@@ -8,27 +8,27 @@ MODEL_NAME = "BAAI/bge-large-en-v1.5"
 
 def profile_to_text(profile):
 
-    keywords = " ".join(
+    mcc = profile.get("mcc", "")
+    industry = profile.get("industry", "")
+    category = profile.get("category", "")
+    description = profile.get("description", "")
+
+    keywords = ", ".join(
         profile.get("keywords", [])
     )
 
-    aliases = " ".join(
+    aliases = ", ".join(
         profile.get("aliases", [])
     )
 
-    return f"""
-Merchant Category Code: {profile.get("mcc","")}
-
-Industry: {profile.get("industry","")}
-
-Category: {profile.get("category","")}
-
-Merchant Activity: {profile.get("description","")}
-
-Keywords: {keywords}
-
-Aliases: {aliases}
-"""
+    return (
+        f"MCC {mcc}. "
+        f"Industry: {industry}. "
+        f"Category: {category}. "
+        f"Business: {description}. "
+        f"Keywords: {keywords}. "
+        f"Aliases: {aliases}."
+    )
 
 
 def main():
@@ -65,11 +65,11 @@ def main():
 
         texts,
 
-        show_progress_bar=True,
-
         convert_to_numpy=True,
 
-        normalize_embeddings=True
+        normalize_embeddings=True,
+
+        show_progress_bar=True
 
     )
 
@@ -93,11 +93,9 @@ def main():
         )
 
     print()
-
     print("Done!")
-
     print(
-        f"Saved {len(profiles)} embeddings."
+        f"Saved {len(profiles)} embeddings to data/mcc_embeddings.pkl"
     )
 
 
