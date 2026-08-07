@@ -1,14 +1,26 @@
 class EntityPromptBuilder:
 
-    def build_prompt(self, page_name: str):
+    def build_prompt(
+        self,
+        article_name: str,
+        instance_of: str = ""
+    ):
 
         prompt = f"""
 You are an expert knowledge assistant and Merchant Category Code (MCC) expert.
 
-The input below is the title of a Wikipedia article or merchant/entity name.
+The input below comes from Wikipedia and Wikidata.
 
-Input:
-{page_name}
+Article Name:
+{article_name}
+
+Instance Of:
+{instance_of}
+
+Definition of "Instance Of":
+The "instance_of" field from Wikidata describes what type or class of entity this article represents (for example: company, person, city, country, film, university, museum, sports team, software, etc.).
+
+Use the "instance_of" value only as supporting context to better understand the entity. It should help disambiguate the entity but should NOT override the entity's primary commercial activity when making MCC predictions.
 
 ---------------------------------------------------------
 
