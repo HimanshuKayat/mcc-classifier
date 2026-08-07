@@ -7,122 +7,139 @@ class ConfidenceScorer:
 
         self.model = embedding_model
 
-    def _similarity(self, text1, text2):
+    ####################################################
+    # EMBEDDING SIMILARITY
+    ####################################################
+
+    def _similarity(
+
+        self,
+
+        text1,
+
+        text2
+
+    ):
 
         if not text1.strip() or not text2.strip():
+
             return 0.0
 
         embeddings = self.model.encode(
+
             [text1, text2],
-            convert_to_numpy=True
+
+            convert_to_numpy=True,
+
+            normalize_embeddings=True
+
         )
 
         similarity = cosine_similarity(
+
             [embeddings[0]],
+
             [embeddings[1]]
+
         )[0][0]
 
         return float(similarity)
 
-    #########################################################
-    # MODEL'S PREDICTED MCC PROFILE
-    #########################################################
+    ####################################################
+    # ENTITY REPRESENTATION
+    ####################################################
 
-    def _predicted_profile(self, entity):
+    def _entity_text(
 
-        return f"""
-Entity Name:
-{entity.get("entity_name","")}
-
-Entity Type:
-{entity.get("entity_type","")}
-
-Primary Business:
-{entity.get("primary_business","")}
-
-Industry:
-{entity.get("industry","")}
-
-Predicted MCC:
-{entity.get("predicted_mcc","")}
-
-Predicted MCC Industry:
-{entity.get("predicted_mcc_industry","")}
-
-Predicted Reason:
-{entity.get("predicted_mcc_reason","")}
-"""
-
-    #########################################################
-    # RETRIEVED / FINAL MCC PROFILE
-    #########################################################
-
-    def _selected_profile(self, profile):
-
-        return f"""
-MCC:
-{profile.get("mcc","")}
-
-Industry:
-{profile.get("industry","")}
-
-Category:
-{profile.get("category","")}
-
-Description:
-{profile.get("description","")}
-
-Keywords:
-{' '.join(profile.get("keywords", []))}
-
-Aliases:
-{' '.join(profile.get("aliases", []))}
-"""
-
-    #########################################################
-    # FINAL CONFIDENCE
-    #########################################################
-
-    def calculate(
         self,
-        entity_profile,
-        selected_profile
+
+        entity
+
     ):
 
-        predicted_text = self._predicted_profile(
-            entity_profile
+        return (
+            f"{entity.get('entity_type','')} | "
+            f"{entity.get('primary_business','')} | "
+            f"{entity.get('industry','')} | "
+            f"{' '.join(entity.get('products_services', []))} | "
+            f"{' '.join(entity.get('keywords', []))} | "
+            f"{' '.join(entity.get('aliases', []))}"
         )
 
-        selected_text = self._selected_profile(
-            selected_profile
+    ####################################################
+    # MCC REPRESENTATION
+    ####################################################
+
+    def _mcc_text(
+
+        self,
+
+        profile
+
+    ):
+
+        return (
+            f"{profile.get('industry','')} | "
+            f"{profile.get('category','')} | "
+            f"{profile.get('description','')} | "
+            f"{' '.join(profile.get('keywords', []))} | "
+            f"{' '.join(profile.get('aliases', []))}"
         )
+
+    ####################################################
+    # FINAL CONFIDENCE
+    ####################################################
+
+    def calculate(
+
+        self,
+
+        entity_profile,
+
+        selected_profile
+
+    ):
 
         semantic_similarity = self._similarity(
-            predicted_text,
-            selected_text
+
+            self._entity_text(entity_profile),
+
+            self._mcc_text(selected_profile)
+
         )
 
         retrieval_similarity = float(
+
             selected_profile.get(
+
                 "retrieval_score",
+
                 0.0
+
             )
+
         )
 
         confidence = (
 
-            semantic_similarity * 0.80 +
+            semantic_similarity * 0.70 +
 
-            retrieval_similarity * 0.20
+            retrieval_similarity * 0.30
 
         ) * 100
 
         confidence = max(
+
             0,
+
             min(
+
                 confidence,
+
                 100
+
             )
+
         )
 
         return round(confidence, 2)
