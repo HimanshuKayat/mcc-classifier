@@ -110,12 +110,22 @@ class MCCClassifier:
             mcc_response = self.model.generate(
                 mcc_prompt
             )
+            print("\n" + "=" * 80)
+            print("RAW MCC RESPONSE")
+            print("=" * 80)
+            print(mcc_response)
+            print("=" * 80 + "\n")
 
             try:
 
                 final_result = JSONParser.parse(
                     mcc_response
                 )
+                print("\n" + "=" * 80)
+                print("PARSED MCC RESULT")
+                print("=" * 80)
+                print(final_result)
+                print("=" * 80 + "\n")
 
                 break
 
