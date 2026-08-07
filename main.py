@@ -1,6 +1,7 @@
 from scripts.classifier import MCCClassifier
 import pandas as pd
 
+
 def main():
 
     classifier = MCCClassifier()
@@ -10,7 +11,7 @@ def main():
     print("=" * 60)
 
     ####################################################
-    # LOAD INPUT EXCEL
+    # LOAD INPUT
     ####################################################
 
     input_file = "data/articles_metadata.xlsx"
@@ -18,36 +19,87 @@ def main():
     df = pd.read_excel(input_file)
 
     ####################################################
-    # ADD OUTPUT COLUMNS
+    # ENTITY COLUMNS
     ####################################################
 
-    if "entity_profile" not in df.columns:
-        df["entity_profile"] = ""
+    entity_columns = [
 
-    if "mcc_predictions" not in df.columns:
-        df["mcc_predictions"] = ""
+        "entity_name",
+        "entity_type",
+        "primary_business",
+        "industry",
+        "products_services",
+        "target_customers",
+        "country",
+        "keywords",
+        "aliases"
 
-    if "status" not in df.columns:
-        df["status"] = ""
-
-    if "error" not in df.columns:
-        df["error"] = ""
+    ]
 
     ####################################################
-    # PROCESS EACH ROW
+    # TOP 5 MCC COLUMNS
+    ####################################################
+
+    prediction_columns = []
+
+    for i in range(1, 6):
+
+        prediction_columns.extend([
+
+            f"rank{i}_mcc",
+            f"rank{i}_industry",
+            f"rank{i}_reason"
+
+        ])
+
+    ####################################################
+    # STATUS
+    ####################################################
+
+    misc_columns = [
+
+        "status",
+        "error"
+
+    ]
+
+    ####################################################
+    # ADD NEW COLUMNS IF MISSING
+    ####################################################
+
+    for column in entity_columns + prediction_columns + misc_columns:
+
+        if column not in df.columns:
+
+            df[column] = ""
+
+    ####################################################
+    # PROCESS
     ####################################################
 
     total = len(df)
 
+    output_file = "articles_metadata_output.xlsx"
+
     for index, row in df.iterrows():
 
-        article_name = "" if pd.isna(row["article"]) else str(row["article"]).strip()
+        article_name = ""
 
-        instance_of = "" if pd.isna(row["instance_of"]) else str(row["instance_of"]).strip()
+        if not pd.isna(row["article"]):
 
-        print(
-            f"\n[{index + 1}/{total}] Processing: {article_name}"
-        )
+            article_name = str(
+                row["article"]
+            ).strip()
+
+        instance_of = ""
+
+        if not pd.isna(row["instance_of"]):
+
+            instance_of = str(
+                row["instance_of"]
+            ).strip()
+
+        print(f"[{index + 1}/{total}] {article_name}")
 
         try:
 
@@ -59,48 +111,56 @@ def main():
 
             )
 
-            ####################################################
-            # GET RESULTS
-            ####################################################
+            entity = result["entity_profile"]
 
-            entity_profile = result["entity_profile"]
-
-            entity_response = result["entity_response"]
-
-            final_prediction = result["final_prediction"]
-
-            mcc_response = result["mcc_response"]
+            prediction = result["final_prediction"]
 
             ####################################################
-            # PRINT ENTITY PROFILE
+            # ENTITY
             ####################################################
 
-            print("\n" + "=" * 80)
-            print("ENTITY PROFILE")
-            print("=" * 80)
-            print(entity_response)
+            for key in entity_columns:
+
+                value = entity.get(key, "")
+
+                if isinstance(value, list):
+
+                    value = "; ".join(value)
+
+                df.at[index, key] = value
 
             ####################################################
-            # PRINT MCC RESULT
+            # TOP 5 MCC
             ####################################################
 
-            print("\n" + "=" * 80)
-            print("TOP 5 MCC PREDICTIONS")
-            print("=" * 80)
-            print(mcc_response)
-            print("=" * 80)
+            predictions = prediction.get(
 
-            ####################################################
-            # SAVE RAW ENTITY PROFILE
-            ####################################################
+                "top_5_mcc_predictions",
 
-            df.at[index, "entity_profile"] = entity_response
+                []
 
-            ####################################################
-            # SAVE RAW MCC RESPONSE
-            ####################################################
+            )
 
-            df.at[index, "mcc_predictions"] = mcc_response
+            for i in range(5):
+
+                if i < len(predictions):
+
+                    item = predictions[i]
+
+                    df.at[index, f"rank{i+1}_mcc"] = item.get(
+                        "mcc",
+                        ""
+                    )
+
+                    df.at[index, f"rank{i+1}_industry"] = item.get(
+                        "industry",
+                        ""
+                    )
+
+                    df.at[index, f"rank{i+1}_reason"] = item.get(
+                        "reason",
+                        ""
+                    )
 
             ####################################################
             # STATUS
@@ -112,27 +172,25 @@ def main():
 
         except Exception as e:
 
-            print(f"Failed: {article_name}")
-
-            print(str(e))
-
             df.at[index, "status"] = "Failed"
 
             df.at[index, "error"] = str(e)
 
+        ####################################################
+        # SAVE AFTER EVERY ARTICLE
+        ####################################################
+
+        df.to_excel(
+
+            output_file,
+
+            index=False
+
+        )
+
     ####################################################
-    # SAVE OUTPUT
+    # DONE
     ####################################################
-
-    output_file = "articles_metadata_output.xlsx"
-
-    df.to_excel(
-
-        output_file,
-
-        index=False
-
-    )
 
     print("\n" + "=" * 60)
 
