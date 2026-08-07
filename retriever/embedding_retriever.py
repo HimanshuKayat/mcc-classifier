@@ -13,63 +13,141 @@ class EmbeddingRetriever:
     ):
 
         # Load embedding model
-        self.model = SentenceTransformer(model_name)
+        self.model = SentenceTransformer(
+            model_name
+        )
 
         # Load precomputed MCC embeddings
-        with open(embedding_file, "rb") as f:
+        with open(
+            embedding_file,
+            "rb"
+        ) as f:
+
             data = pickle.load(f)
 
         self.mcc_profiles = data["profiles"]
+
         self.embeddings = data["embeddings"]
 
-    def retrieve(self, entity_profile, top_k=20):
+    def retrieve(
+        self,
+        entity_profile,
+        top_k=20
+    ):
 
-        # Convert entity profile into searchable text
-        query = self._profile_to_text(entity_profile)
+        ####################################################
+        # BUILD QUERY
+        ####################################################
 
-        # Generate embedding
-        query_embedding = self.model.encode(
-            [query],
-            convert_to_numpy=True
+        query = self._profile_to_text(
+            entity_profile
         )
 
-        # Compute cosine similarities
+        ####################################################
+        # CREATE QUERY EMBEDDING
+        ####################################################
+
+        query_embedding = self.model.encode(
+
+            [query],
+
+            convert_to_numpy=True
+
+        )
+
+        ####################################################
+        # COMPUTE COSINE SIMILARITY
+        ####################################################
+
         similarities = cosine_similarity(
+
             query_embedding,
+
             self.embeddings
+
         )[0]
 
-        # Rank MCC profiles
+        ####################################################
+        # SORT MCCs
+        ####################################################
+
         ranked = sorted(
-            zip(similarities, self.mcc_profiles),
+
+            zip(
+                similarities,
+                self.mcc_profiles
+            ),
+
             key=lambda x: x[0],
+
             reverse=True
+
         )
 
-        # Keep similarity score along with profile
+        ####################################################
+        # RETURN TOP K
+        ####################################################
+
         results = []
 
         for similarity, profile in ranked[:top_k]:
 
             profile_copy = profile.copy()
 
-            profile_copy["retrieval_score"] = float(similarity)
+            profile_copy["retrieval_score"] = float(
+                similarity
+            )
 
-            results.append(profile_copy)
+            results.append(
+                profile_copy
+            )
 
         return results
 
-    def _profile_to_text(self, profile):
+    def _profile_to_text(
+        self,
+        profile
+    ):
+
+        products = " | ".join(
+
+            profile.get(
+                "products_services",
+                []
+            )
+
+        )
+
+        customers = " | ".join(
+
+            profile.get(
+                "target_customers",
+                []
+            )
+
+        )
+
+        keywords = " | ".join(
+
+            profile.get(
+                "keywords",
+                []
+            )
+
+        )
+
+        aliases = " | ".join(
+
+            profile.get(
+                "aliases",
+                []
+            )
+
+        )
 
         return f"""
-Entity Name:
-{profile.get("entity_name", "")}
-
-Entity Type:
-{profile.get("entity_type", "")}
-
-Summary:
-{profile.get("summary", "")}
+Primary Business:
+{profile.get("primary_business", "")}
 
 Primary Business:
 {profile.get("primary_business", "")}
@@ -77,18 +155,33 @@ Primary Business:
 Industry:
 {profile.get("industry", "")}
 
-Products and Services:
-{' '.join(profile.get("products_services", []))}
+Industry:
+{profile.get("industry", "")}
 
-Target Customers:
-{' '.join(profile.get("target_customers", []))}
+Entity Type:
+{profile.get("entity_type", "")}
+
+Instance Of:
+{profile.get("instance_of", "")}
+
+Products and Services:
+{products}
+
+Products and Services:
+{products}
 
 Business Model:
 {profile.get("business_model", "")}
 
+Target Customers:
+{customers}
+
 Keywords:
-{' '.join(profile.get("keywords", []))}
+{keywords}
+
+Keywords:
+{keywords}
 
 Aliases:
-{' '.join(profile.get("aliases", []))}
+{aliases}
 """
