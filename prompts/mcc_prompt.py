@@ -25,7 +25,9 @@ class MCCPromptBuilder:
             )
 
         return f"""
-You are an expert Visa/Mastercard Merchant Category Code classifier.
+You are an expert Visa and Mastercard Merchant Category Code (MCC) classifier.
+
+Your task is to identify which merchant category best represents the PRIMARY COMMERCIAL ACTIVITY of the entity.
 
 ENTITY
 
@@ -35,37 +37,21 @@ AVAILABLE MCC CANDIDATES
 
 {candidates}
 
-Select ONLY from the candidate MCCs above.
+Instructions
 
-Interpret the entity as follows:
-
-• Person → classify according to their profession or the commercial activity consumers associate with them.
-  Examples:
-  Actor → Motion Pictures
-  Singer → Music
-  Football Player → Sports
-  Author → Books
-
-• Company → primary business activity.
-
-• Place → dominant commercial activity.
-
-• Country/City → tourism, transport, government or other dominant commercial activity.
-
-• Movie / TV Show → how consumers purchase or watch it.
-
-• Book → bookstore or publishing.
-
-• Software / App → software or digital services.
-
-Rules
-
-- Choose ONLY from the candidate list.
+- Consider ONLY the MCC candidates provided above.
 - Never invent an MCC.
 - Never repeat an MCC.
-- Rank the FIVE strongest semantic matches.
-- Base the decision on commercial activity, not keyword overlap.
+- Determine the entity's PRIMARY commercial activity.
+- Ignore popularity, fame, historical importance, politics, ownership, wealth and unrelated facts.
+- Compare the entity's commercial activity against every candidate.
+- Select the five candidates that best represent how a customer would transact with this entity.
+- Rank from strongest semantic match to weakest.
+- If two MCCs are similar, prefer the more specific one.
 - Return ONLY valid JSON.
+- Do not explain your reasoning outside the JSON.
+
+Output Format
 
 {{
   "top_5_mcc_predictions": [
