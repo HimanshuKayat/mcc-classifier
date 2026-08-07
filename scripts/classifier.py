@@ -25,9 +25,9 @@ class MCCClassifier:
         )
 
     def classify(
-    self,
-    article_name: str,
-    instance_of: str = ""
+        self,
+        article_name: str,
+        instance_of: str = ""
     ):
 
         ####################################################
@@ -110,6 +110,7 @@ class MCCClassifier:
             mcc_response = self.model.generate(
                 mcc_prompt
             )
+
             print("\n" + "=" * 80)
             print("RAW MCC RESPONSE")
             print("=" * 80)
@@ -121,6 +122,7 @@ class MCCClassifier:
                 final_result = JSONParser.parse(
                     mcc_response
                 )
+
                 print("\n" + "=" * 80)
                 print("PARSED MCC RESULT")
                 print("=" * 80)
@@ -186,18 +188,14 @@ class MCCClassifier:
         # RETURN
         ####################################################
 
-            ####################################################
-    # RETURN
-    ####################################################
+        return {
 
-    return {
+            "entity_profile": entity_profile,
 
-        "entity_profile": entity_profile,
+            "entity_response": entity_response,
 
-        "entity_response": entity_response,
+            "final_prediction": final_result,
 
-        "final_prediction": final_result,
+            "mcc_response": mcc_response
 
-        "mcc_response": mcc_response
-
-    }
+        }
