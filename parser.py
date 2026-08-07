@@ -4,69 +4,55 @@ import re
 
 class JSONParser:
 
+    LIST_FIELDS = {
+        "products_services",
+        "target_customers",
+        "keywords",
+        "aliases"
+    }
+
     @staticmethod
     def parse(response: str):
 
         if not response:
             raise ValueError("LLM returned an empty response.")
 
-        response = response.strip()
+        response = (
+            response.replace("```json", "")
+                    .replace("```", "")
+                    .strip()
+        )
 
         ####################################################
-        # JSON RESPONSE
+        # TRY TO EXTRACT JSON ANYWHERE IN RESPONSE
         ####################################################
 
-        if response.startswith("{"):
+        match = re.search(
+            r"\{[\s\S]*\}",
+            response
+        )
 
-            response = response.replace(
-                "```json",
-                ""
-            ).replace(
-                "```",
-                ""
-            ).strip()
+        if match:
 
-            match = re.search(
-                r"\{.*\}",
-                response,
-                re.DOTALL
-            )
-
-            if not match:
-                raise ValueError(
-                    "No JSON object found."
+            try:
+                return json.loads(
+                    match.group(0)
                 )
 
-            return json.loads(
-                match.group()
-            )
+            except json.JSONDecodeError:
+                pass
 
         ####################################################
-        # KEY-VALUE RESPONSE
+        # FALLBACK TO KEY-VALUE PARSER
         ####################################################
 
         profile = {}
-
-        list_fields = {
-
-            "products_services",
-
-            "target_customers",
-
-            "keywords",
-
-            "aliases"
-
-        }
 
         for line in response.splitlines():
 
             line = line.strip()
 
-            if not line:
-                continue
-
-            if ":" not in line:
+            if not line or ":" not in line:
                 continue
 
             key, value = line.split(":", 1)
@@ -75,7 +61,7 @@ class JSONParser:
 
             value = value.strip()
 
-            if key in list_fields:
+            if key in JSONParser.LIST_FIELDS:
 
                 profile[key] = [
 
@@ -85,10 +71,16 @@ class JSONParser:
 
                     if item.strip()
 
-                ] if value else []
+                ]
 
             else:
 
                 profile[key] = value
+
+        if not profile:
+
+            raise ValueError(
+                "Unable to parse model response."
+            )
 
         return profile
