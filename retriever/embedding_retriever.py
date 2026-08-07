@@ -12,14 +12,9 @@ class EmbeddingRetriever:
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     ):
 
-        self.model = SentenceTransformer(
-            model_name
-        )
+        self.model = SentenceTransformer(model_name)
 
-        with open(
-            embedding_file,
-            "rb"
-        ) as f:
+        with open(embedding_file, "rb") as f:
 
             data = pickle.load(f)
 
@@ -33,48 +28,31 @@ class EmbeddingRetriever:
         top_k=20
     ):
 
-        ####################################################
-        # BUILD QUERY
-        ####################################################
-
         query = self._profile_to_text(
             entity_profile
         )
 
-        ####################################################
-        # CREATE EMBEDDING
-        ####################################################
-
         query_embedding = self.model.encode(
 
-            [query],
+            query,
 
-            convert_to_numpy=True
+            convert_to_numpy=True,
+
+            normalize_embeddings=True
 
         )
 
-        ####################################################
-        # COSINE SIMILARITY
-        ####################################################
-
         similarities = cosine_similarity(
 
-            query_embedding,
+            [query_embedding],
 
             self.embeddings
 
         )[0]
 
-        ####################################################
-        # SORT
-        ####################################################
-
         ranked = sorted(
 
-            zip(
-                similarities,
-                self.mcc_profiles
-            ),
+            zip(similarities, self.mcc_profiles),
 
             key=lambda x: x[0],
 
@@ -82,23 +60,15 @@ class EmbeddingRetriever:
 
         )
 
-        ####################################################
-        # RETURN TOP K
-        ####################################################
-
         results = []
 
         for similarity, profile in ranked[:top_k]:
 
             profile_copy = profile.copy()
 
-            profile_copy["retrieval_score"] = float(
-                similarity
-            )
+            profile_copy["retrieval_score"] = float(similarity)
 
-            results.append(
-                profile_copy
-            )
+            results.append(profile_copy)
 
         return results
 
@@ -107,49 +77,48 @@ class EmbeddingRetriever:
         profile
     ):
 
-        primary_business = profile.get(
-            "primary_business",
-            ""
-        )
-
-        industry = profile.get(
-            "industry",
-            ""
-        )
-
-        entity_type = profile.get(
-            "entity_type",
-            ""
-        )
-
-        instance_of = profile.get(
-            "instance_of",
-            ""
-        )
-
         products = " ".join(
-
             profile.get(
                 "products_services",
                 []
             )
+        )
 
+        customers = " ".join(
+            profile.get(
+                "target_customers",
+                []
+            )
         )
 
         keywords = " ".join(
-
             profile.get(
                 "keywords",
                 []
             )
-
         )
 
-        return (
-            f"{primary_business}. "
-            f"{industry}. "
-            f"{entity_type}. "
-            f"{instance_of}. "
-            f"{products}. "
-            f"{keywords}."
+        aliases = " ".join(
+            profile.get(
+                "aliases",
+                []
+            )
         )
+
+        return f"""
+Entity Type: {profile.get("entity_type","")}
+
+Primary Business: {profile.get("primary_business","")}
+
+Industry: {profile.get("industry","")}
+
+Products: {products}
+
+Customers: {customers}
+
+Country: {profile.get("country","")}
+
+Keywords: {keywords}
+
+Aliases: {aliases}
+"""
