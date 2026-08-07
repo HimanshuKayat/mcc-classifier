@@ -1,5 +1,6 @@
 from copy import deepcopy
 import json
+
 from models.llama_model import LlamaModel
 from prompts.entity_prompt import EntityPromptBuilder
 from prompts.mcc_prompt import MCCPromptBuilder
@@ -95,6 +96,26 @@ class MCCClassifier:
         )
 
         ####################################################
+        # DEBUG RETRIEVED MCCs
+        ####################################################
+
+        print("\n" + "=" * 80)
+        print("TOP 20 RETRIEVED MCCs")
+        print("=" * 80)
+
+        for i, c in enumerate(candidates, 1):
+
+            print(
+                f"{i:2d}. "
+                f"MCC: {c['mcc']} | "
+                f"Industry: {c['industry']} | "
+                f"Category: {c['category']} | "
+                f"Score: {c['retrieval_score']:.4f}"
+            )
+
+        print("=" * 80 + "\n")
+
+        ####################################################
         # STEP 3 : FINAL MCC SELECTION
         ####################################################
 
@@ -175,11 +196,8 @@ class MCCClassifier:
                 )
 
             confidence = self.confidence.calculate(
-
                 entity_profile=entity_profile,
-
                 selected_profile=selected_profile
-
             )
 
             prediction["confidence"] = confidence
@@ -189,10 +207,6 @@ class MCCClassifier:
         ####################################################
 
         return {
-
             "entity_profile": entity_profile,
-
             "final_prediction": final_result,
-
-
         }
