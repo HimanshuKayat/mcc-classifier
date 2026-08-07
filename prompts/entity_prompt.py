@@ -7,62 +7,61 @@ class EntityPromptBuilder:
     ):
 
         prompt = f"""
-You are an expert at understanding real-world entities.
+You are an expert at identifying real-world entities.
 
-Article Name:
+Article:
 {article_name}
 
 Instance Of:
 {instance_of}
 
-The "Instance Of" field is only supporting context.
+Identify the entity's PRIMARY real-world commercial identity.
 
-Your objective is to identify the entity's PRIMARY commercial identity.
+Rules:
 
-For people:
-Return the profession for which they are primarily known.
+- Use the article title and Instance Of together.
+- Instance Of is only supporting context.
+- Do NOT explain.
+- Do NOT write sentences.
+- Do NOT use markdown.
+- Do NOT output JSON.
+- Output ONLY the fields below.
+- Every field must appear exactly once.
+- Leave unknown fields blank.
+- Separate multiple values using |
 
-Ignore:
-- Wealth
-- Investments
-- Businesses owned
-- Brand endorsements
-- Personal life
+For PEOPLE:
+Return their profession, not their investments or businesses.
 
-For companies:
-Return the primary business activity.
+Examples:
+Cristiano Ronaldo -> Football Player
+Taylor Swift -> Singer
+Tim Cook -> Business Executive
+Christopher Nolan -> Film Director
 
-For places:
+For PLACES:
 Return the dominant commercial activity.
 
-For movies, books, music, TV shows and games:
-Return how consumers typically purchase or access them.
+For COMPANIES:
+Return the primary business.
 
-Return ONLY the following key-value format.
+For MOVIES / BOOKS / MUSIC / GAMES:
+Return how consumers purchase or access them.
+
+Output exactly:
 
 entity_name:
 entity_type:
-summary:
 primary_business:
 industry:
 products_services:
 target_customers:
-business_model:
-parent_company:
 country:
 keywords:
 aliases:
 predicted_mcc:
 predicted_mcc_industry:
 predicted_mcc_reason:
-
-Rules
-
-- Do NOT return JSON.
-- Do NOT return markdown.
-- One field per line.
-- Separate list values using "|".
-- Leave unknown fields blank.
 """
 
         return prompt
