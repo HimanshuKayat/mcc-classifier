@@ -35,17 +35,37 @@ AVAILABLE MCC CANDIDATES
 
 {candidates}
 
-Instructions
+Select ONLY from the candidate MCCs above.
 
-- Choose ONLY from the MCC candidates above.
+Interpret the entity as follows:
+
+• Person → classify according to their profession or the commercial activity consumers associate with them.
+  Examples:
+  Actor → Motion Pictures
+  Singer → Music
+  Football Player → Sports
+  Author → Books
+
+• Company → primary business activity.
+
+• Place → dominant commercial activity.
+
+• Country/City → tourism, transport, government or other dominant commercial activity.
+
+• Movie / TV Show → how consumers purchase or watch it.
+
+• Book → bookstore or publishing.
+
+• Software / App → software or digital services.
+
+Rules
+
+- Choose ONLY from the candidate list.
 - Never invent an MCC.
 - Never repeat an MCC.
-- Rank the FIVE best semantic matches.
-- Match the commercial activity, not keywords.
-- Ignore word overlap.
+- Rank the FIVE strongest semantic matches.
+- Base the decision on commercial activity, not keyword overlap.
 - Return ONLY valid JSON.
-
-Output format
 
 {{
   "top_5_mcc_predictions": [
