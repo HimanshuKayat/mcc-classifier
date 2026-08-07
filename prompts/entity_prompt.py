@@ -9,28 +9,18 @@ class EntityPromptBuilder:
         prompt = f"""
 You are an expert at understanding real-world entities.
 
-Input
-
 Article Name:
 {article_name}
 
 Instance Of:
 {instance_of}
 
-The "Instance Of" field is only supporting context to identify the entity type.
+The "Instance Of" field is only supporting context.
 
-Your job is to identify the entity's PRIMARY commercial identity.
+Your objective is to identify the entity's PRIMARY commercial identity.
 
 For people:
 Return the profession for which they are primarily known.
-
-Examples:
-Actor
-Singer
-Football Player
-Author
-Politician
-Scientist
 
 Ignore:
 - Wealth
@@ -45,17 +35,20 @@ Return the primary business activity.
 For places:
 Return the dominant commercial activity.
 
-For movies, books, games and music:
-Return how consumers primarily access or purchase them.
+For movies, books, music, TV shows and games:
+Return how consumers typically purchase or access them.
 
 Return ONLY the following key-value format.
 
 entity_name:
 entity_type:
+summary:
 primary_business:
 industry:
 products_services:
 target_customers:
+business_model:
+parent_company:
 country:
 keywords:
 aliases:
@@ -69,7 +62,7 @@ Rules
 - Do NOT return markdown.
 - One field per line.
 - Separate list values using "|".
-- If unknown leave blank.
+- Leave unknown fields blank.
 """
 
         return prompt
