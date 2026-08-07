@@ -20,52 +20,33 @@ class MCCPromptBuilder:
                 f"Industry: {item.get('industry', '')}\n"
                 f"Category: {item.get('category', '')}\n"
                 f"Description: {item.get('description', '')}\n"
-                f"Keywords: {', '.join(item.get('keywords', []))}\n"
-                f"Aliases: {', '.join(item.get('aliases', []))}\n"
-                "------------------------------------------------------------\n"
+                "----------------------------------------\n"
             )
 
         prompt = f"""
 You are an expert Merchant Category Code (MCC) classifier.
 
-ENTITY PROFILE
+Entity Profile:
 
 {entity_json}
 
-AVAILABLE MCC CANDIDATES
+Candidate MCCs:
 
 {mcc_text}
 
-TASK
+Task:
 
-Select the FIVE MCCs that are the strongest semantic matches for the entity.
+Choose the FIVE MCCs whose merchant activity best matches the entity.
 
-Base your decision primarily on:
+Rules:
 
-- Primary commercial activity
-- Business model
-- Products and services
-- Customer transaction
-- Industry
-- Description
-
-Guidelines
-
-- Companies → classify by primary revenue-generating activity.
-- Products → classify by where the product is normally purchased.
-- Places → classify by dominant commercial activity.
-- People → classify by the commercial activity most associated with them (movies, music, sports, books, education, merchandise, travel, etc.).
-- Movies, TV shows, books, games and events → classify by how consumers purchase or access them.
-
-Rules
-
-1. Choose ONLY from the MCC candidates provided.
-2. Never invent an MCC.
-3. Return EXACTLY five different MCCs.
-4. Rank from best match to fifth-best match.
-5. The first MCC should be the single best overall match.
-6. Return ONLY valid JSON.
-7. No explanations outside the JSON.
+- Use semantic meaning.
+- Do not use keyword matching alone.
+- Only choose from the candidate MCCs.
+- Do not repeat an MCC.
+- Rank from best to worst.
+- Give a short reason for each choice.
+- Return ONLY valid JSON.
 
 Return exactly:
 
