@@ -1,5 +1,4 @@
 import pickle
-import re
 import numpy as np
 
 from sentence_transformers import SentenceTransformer
@@ -23,7 +22,7 @@ class EmbeddingRetriever:
         self.embeddings = data["embeddings"]
 
     ####################################################
-    # MAIN RETRIEVAL
+    # PUBLIC
     ####################################################
 
     def retrieve(
@@ -36,71 +35,33 @@ class EmbeddingRetriever:
             entity_profile
         )
 
-        query_embedding = self.model.encode(
+        embedding = self.model.encode(
             query,
             convert_to_numpy=True,
             normalize_embeddings=True
         )
 
-        similarities = cosine_similarity(
-            [query_embedding],
+        scores = cosine_similarity(
+            [embedding],
             self.embeddings
         )[0]
 
-        ####################################################
-        # GET TOP 60 BY EMBEDDINGS
-        ####################################################
+        indices = np.argsort(scores)[::-1][:top_k]
 
-        candidate_indices = np.argsort(
-            similarities
-        )[::-1][:60]
+        results = []
 
-        ####################################################
-        # RERANK
-        ####################################################
-
-        ranked = []
-
-        for idx in candidate_indices:
+        for idx in indices:
 
             profile = self.mcc_profiles[idx].copy()
 
-            embedding_score = float(
-                similarities[idx]
-            )
-
-            keyword_bonus = self._keyword_bonus(
-                entity_profile,
-                profile
-            )
-
-            industry_bonus = self._industry_bonus(
-                entity_profile,
-                profile
-            )
-
-            final_score = (
-                embedding_score +
-                keyword_bonus +
-                industry_bonus
-            )
-
             profile["retrieval_score"] = round(
-                final_score,
+                float(scores[idx]),
                 4
             )
 
-            ranked.append(profile)
+            results.append(profile)
 
-        ranked.sort(
-
-            key=lambda x: x["retrieval_score"],
-
-            reverse=True
-
-        )
-
-        return ranked[:top_k]
+        return results
 
     ####################################################
     # QUERY REPRESENTATION
@@ -111,203 +72,64 @@ class EmbeddingRetriever:
         profile
     ):
 
-        return (
-            f"Entity: {profile.get('entity_type','')}. "
-            f"Business: {profile.get('primary_business','')}. "
-            f"Industry: {profile.get('industry','')}. "
-            f"Products: {', '.join(profile.get('products_services', []))}. "
-            f"Customers: {', '.join(profile.get('target_customers', []))}. "
-            f"Country: {profile.get('country','')}. "
-            f"Keywords: {', '.join(profile.get('keywords', []))}. "
-            f"Aliases: {', '.join(profile.get('aliases', []))}."
-        )
+        fields = [
 
-    ####################################################
-    # TOKENIZER
-    ####################################################
+            profile.get(
+                "entity_type",
+                ""
+            ),
 
-    def _tokens(self, text):
-
-        return {
-
-            token
-
-            for token in re.findall(
-
-                r"[a-zA-Z0-9]+",
-
-                text.lower()
-
-            )
-
-            if len(token) > 2
-
-        }
-
-    ####################################################
-    # KEYWORD BONUS
-    ####################################################
-
-    def _keyword_bonus(
-
-        self,
-
-        entity,
-
-        mcc
-
-    ):
-
-        entity_tokens = set()
-
-        entity_tokens |= self._tokens(
-
-            entity.get(
-
+            profile.get(
                 "primary_business",
-
                 ""
+            ),
 
-            )
-
-        )
-
-        entity_tokens |= self._tokens(
-
-            entity.get(
-
+            profile.get(
                 "industry",
-
                 ""
+            ),
 
-            )
+            ", ".join(
+                profile.get(
+                    "products_services",
+                    []
+                )
+            ),
 
-        )
+            ", ".join(
+                profile.get(
+                    "target_customers",
+                    []
+                )
+            ),
 
-        entity_tokens |= {
-
-            x.lower()
-
-            for x in entity.get(
-
-                "keywords",
-
-                []
-
-            )
-
-        }
-
-        mcc_tokens = set()
-
-        mcc_tokens |= self._tokens(
-
-            mcc.get(
-
-                "industry",
-
+            profile.get(
+                "country",
                 ""
+            ),
 
+            ", ".join(
+                profile.get(
+                    "keywords",
+                    []
+                )
+            ),
+
+            ", ".join(
+                profile.get(
+                    "aliases",
+                    []
+                )
             )
 
-        )
+        ]
 
-        mcc_tokens |= self._tokens(
+        return " | ".join(
 
-            mcc.get(
+            field.strip()
 
-                "category",
+            for field in fields
 
-                ""
-
-            )
+            if field and field.strip()
 
         )
-
-        mcc_tokens |= self._tokens(
-
-            mcc.get(
-
-                "description",
-
-                ""
-
-            )
-
-        )
-
-        mcc_tokens |= {
-
-            x.lower()
-
-            for x in mcc.get(
-
-                "keywords",
-
-                []
-
-            )
-
-        }
-
-        overlap = len(
-
-            entity_tokens & mcc_tokens
-
-        )
-
-        return min(
-
-            overlap * 0.02,
-
-            0.10
-
-        )
-
-    ####################################################
-    # INDUSTRY BONUS
-    ####################################################
-
-    def _industry_bonus(
-
-        self,
-
-        entity,
-
-        mcc
-
-    ):
-
-        entity_industry = entity.get(
-
-            "industry",
-
-            ""
-
-        ).lower()
-
-        mcc_industry = mcc.get(
-
-            "industry",
-
-            ""
-
-        ).lower()
-
-        if not entity_industry:
-
-            return 0.0
-
-        if entity_industry == mcc_industry:
-
-            return 0.08
-
-        if entity_industry in mcc_industry:
-
-            return 0.05
-
-        if mcc_industry in entity_industry:
-
-            return 0.05
-
-        return 0.0
