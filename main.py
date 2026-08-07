@@ -1,5 +1,6 @@
 from scripts.classifier import MCCClassifier
 import pandas as pd
+import os
 
 
 def main():
@@ -11,12 +12,17 @@ def main():
     print("=" * 60)
 
     ####################################################
-    # LOAD INPUT
+    # INPUT / OUTPUT
     ####################################################
 
     input_file = "data/articles_metadata.xlsx"
+    output_file = "articles_metadata_output.xlsx"
 
-    df = pd.read_excel(input_file)
+    if os.path.exists(output_file):
+        df = pd.read_excel(output_file)
+        print("Resuming from existing output file.")
+    else:
+        df = pd.read_excel(input_file)
 
     ####################################################
     # ENTITY COLUMNS
@@ -37,7 +43,7 @@ def main():
     ]
 
     ####################################################
-    # TOP 5 MCC COLUMNS
+    # PREDICTION COLUMNS
     ####################################################
 
     prediction_columns = []
@@ -47,8 +53,12 @@ def main():
         prediction_columns.extend([
 
             f"rank{i}_mcc",
+
             f"rank{i}_industry",
-            f"rank{i}_reason"
+
+            f"rank{i}_reason",
+
+            f"rank{i}_confidence"
 
         ])
 
@@ -59,12 +69,13 @@ def main():
     misc_columns = [
 
         "status",
+
         "error"
 
     ]
 
     ####################################################
-    # ADD NEW COLUMNS IF MISSING
+    # CREATE MISSING COLUMNS
     ####################################################
 
     for column in entity_columns + prediction_columns + misc_columns:
@@ -79,16 +90,27 @@ def main():
 
     total = len(df)
 
-    output_file = "articles_metadata_output.xlsx"
+    success = 0
+    failed = 0
 
     for index, row in df.iterrows():
+
+        ####################################################
+        # RESUME SUPPORT
+        ####################################################
+
+        if str(row["status"]).strip() == "Success":
+
+            continue
 
         article_name = ""
 
         if not pd.isna(row["article"]):
 
             article_name = str(
+
                 row["article"]
+
             ).strip()
 
         instance_of = ""
@@ -96,7 +118,9 @@ def main():
         if not pd.isna(row["instance_of"]):
 
             instance_of = str(
+
                 row["instance_of"]
+
             ).strip()
 
         print(f"[{index + 1}/{total}] {article_name}")
@@ -113,7 +137,9 @@ def main():
 
             entity = result["entity_profile"]
 
-            prediction = result["final_prediction"]
+            predictions = result["final_prediction"][
+                "top_5_mcc_predictions"
+            ]
 
             ####################################################
             # ENTITY
@@ -130,54 +156,60 @@ def main():
                 df.at[index, key] = value
 
             ####################################################
-            # TOP 5 MCC
+            # PREDICTIONS
             ####################################################
 
-            predictions = prediction.get(
+            for i, prediction in enumerate(predictions):
 
-                "top_5_mcc_predictions",
+                rank = i + 1
 
-                []
+                df.at[index, f"rank{rank}_mcc"] = prediction.get(
 
-            )
+                    "mcc",
 
-            for i in range(5):
+                    ""
 
-                if i < len(predictions):
+                )
 
-                    item = predictions[i]
+                df.at[index, f"rank{rank}_industry"] = prediction.get(
 
-                    df.at[index, f"rank{i+1}_mcc"] = item.get(
-                        "mcc",
-                        ""
-                    )
+                    "industry",
 
-                    df.at[index, f"rank{i+1}_industry"] = item.get(
-                        "industry",
-                        ""
-                    )
+                    ""
 
-                    df.at[index, f"rank{i+1}_reason"] = item.get(
-                        "reason",
-                        ""
-                    )
+                )
 
-            ####################################################
-            # STATUS
-            ####################################################
+                df.at[index, f"rank{rank}_reason"] = prediction.get(
+
+                    "reason",
+
+                    ""
+
+                )
+
+                df.at[index, f"rank{rank}_confidence"] = prediction.get(
+
+                    "confidence",
+
+                    ""
+
+                )
 
             df.at[index, "status"] = "Success"
-
             df.at[index, "error"] = ""
 
+            success += 1
+
         except Exception as e:
+
+            failed += 1
 
             df.at[index, "status"] = "Failed"
 
             df.at[index, "error"] = str(e)
 
         ####################################################
-        # SAVE AFTER EVERY ARTICLE
+        # SAVE EVERY ROW
         ####################################################
 
         df.to_excel(
@@ -189,14 +221,18 @@ def main():
         )
 
     ####################################################
-    # DONE
+    # SUMMARY
     ####################################################
 
     print("\n" + "=" * 60)
 
     print("Processing Complete")
 
-    print(f"Output saved to: {output_file}")
+    print(f"Total    : {total}")
+    print(f"Success  : {success}")
+    print(f"Failed   : {failed}")
+
+    print(f"\nOutput saved to: {output_file}")
 
     print("=" * 60)
 
