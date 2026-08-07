@@ -16,13 +16,19 @@ def profile_to_text(profile):
         profile.get("aliases", [])
     )
 
-    return (
-        f"{profile.get('industry', '')}. "
-        f"{profile.get('category', '')}. "
-        f"{profile.get('description', '')}. "
-        f"{keywords}. "
-        f"{aliases}."
-    )
+    return f"""
+Merchant Category Code: {profile.get("mcc","")}
+
+Industry: {profile.get("industry","")}
+
+Category: {profile.get("category","")}
+
+Merchant Activity: {profile.get("description","")}
+
+Keywords: {keywords}
+
+Aliases: {aliases}
+"""
 
 
 def main():
@@ -43,13 +49,13 @@ def main():
 
         profiles = json.load(f)
 
-    texts = []
+    texts = [
 
-    for profile in profiles:
+        profile_to_text(profile)
 
-        texts.append(
-            profile_to_text(profile)
-        )
+        for profile in profiles
+
+    ]
 
     print(
         f"Generating embeddings for {len(texts)} MCC profiles..."
@@ -61,7 +67,9 @@ def main():
 
         show_progress_bar=True,
 
-        convert_to_numpy=True
+        convert_to_numpy=True,
+
+        normalize_embeddings=True
 
     )
 
@@ -89,7 +97,7 @@ def main():
     print("Done!")
 
     print(
-        f"Saved {len(profiles)} embeddings to data/mcc_embeddings.pkl"
+        f"Saved {len(profiles)} embeddings."
     )
 
 
