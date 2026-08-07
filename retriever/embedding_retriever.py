@@ -1,4 +1,5 @@
 import pickle
+import numpy as np
 
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -15,11 +16,9 @@ class EmbeddingRetriever:
         self.model = SentenceTransformer(model_name)
 
         with open(embedding_file, "rb") as f:
-
             data = pickle.load(f)
 
         self.mcc_profiles = data["profiles"]
-
         self.embeddings = data["embeddings"]
 
     def retrieve(
@@ -33,42 +32,31 @@ class EmbeddingRetriever:
         )
 
         query_embedding = self.model.encode(
-
             query,
-
             convert_to_numpy=True,
-
             normalize_embeddings=True
-
         )
 
         similarities = cosine_similarity(
-
             [query_embedding],
-
             self.embeddings
-
         )[0]
 
-        ranked = sorted(
-
-            zip(similarities, self.mcc_profiles),
-
-            key=lambda x: x[0],
-
-            reverse=True
-
-        )
+        top_indices = np.argsort(
+            similarities
+        )[::-1][:top_k]
 
         results = []
 
-        for similarity, profile in ranked[:top_k]:
+        for idx in top_indices:
 
-            profile_copy = profile.copy()
+            profile = self.mcc_profiles[idx].copy()
 
-            profile_copy["retrieval_score"] = float(similarity)
+            profile["retrieval_score"] = float(
+                similarities[idx]
+            )
 
-            results.append(profile_copy)
+            results.append(profile)
 
         return results
 
@@ -77,48 +65,61 @@ class EmbeddingRetriever:
         profile
     ):
 
-        products = " ".join(
+        entity_type = profile.get(
+            "entity_type",
+            ""
+        )
+
+        business = profile.get(
+            "primary_business",
+            ""
+        )
+
+        industry = profile.get(
+            "industry",
+            ""
+        )
+
+        country = profile.get(
+            "country",
+            ""
+        )
+
+        products = ", ".join(
             profile.get(
                 "products_services",
                 []
             )
         )
 
-        customers = " ".join(
+        customers = ", ".join(
             profile.get(
                 "target_customers",
                 []
             )
         )
 
-        keywords = " ".join(
+        keywords = ", ".join(
             profile.get(
                 "keywords",
                 []
             )
         )
 
-        aliases = " ".join(
+        aliases = ", ".join(
             profile.get(
                 "aliases",
                 []
             )
         )
 
-        return f"""
-Entity Type: {profile.get("entity_type","")}
-
-Primary Business: {profile.get("primary_business","")}
-
-Industry: {profile.get("industry","")}
-
-Products: {products}
-
-Customers: {customers}
-
-Country: {profile.get("country","")}
-
-Keywords: {keywords}
-
-Aliases: {aliases}
-"""
+        return (
+            f"Entity: {entity_type}. "
+            f"Business: {business}. "
+            f"Industry: {industry}. "
+            f"Products: {products}. "
+            f"Customers: {customers}. "
+            f"Country: {country}. "
+            f"Keywords: {keywords}. "
+            f"Aliases: {aliases}."
+        )
