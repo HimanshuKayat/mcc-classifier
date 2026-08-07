@@ -187,9 +187,14 @@ class MCCClassifier:
         ####################################################
 
         return {
+             "entity_profile": entity_profile,
 
-            "entity_profile": entity_profile,
+             "entity_response": entity_response,
 
-            "final_prediction": final_result
+
+             "entity_profile": entity_profile,
+
+             "final_prediction": final_result
+            
 
         }
