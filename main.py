@@ -15,7 +15,7 @@ def main():
     # LOAD INPUT EXCEL
     ####################################################
 
-    input_file = "articles_metadata.xlsx"
+    input_file = "data/articles_metadata.xlsx"
 
     df = pd.read_excel(input_file)
 
@@ -43,9 +43,9 @@ def main():
 
     for index, row in df.iterrows():
 
-        article_name = str(row["article"]).strip()
+        article_name = "" if pd.isna(row["article"]) else str(row["article"]).strip()
 
-        instance_of = str(row["instance_of"]).strip()
+        instance_of = "" if pd.isna(row["instance_of"]) else str(row["instance_of"]).strip()
 
         print(
             f"\n[{index + 1}/{total}] Processing: {article_name}"
