@@ -8,42 +8,21 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 def profile_to_text(profile):
 
-    keywords = " | ".join(
+    keywords = " ".join(
         profile.get("keywords", [])
     )
 
-    aliases = " | ".join(
+    aliases = " ".join(
         profile.get("aliases", [])
     )
 
-    return f"""
-Merchant Category Code:
-{profile.get("mcc","")}
-
-Industry:
-{profile.get("industry","")}
-
-Industry:
-{profile.get("industry","")}
-
-Merchant Category:
-{profile.get("category","")}
-
-Merchant Activity:
-{profile.get("description","")}
-
-Merchant Activity:
-{profile.get("description","")}
-
-Keywords:
-{keywords}
-
-Keywords:
-{keywords}
-
-Aliases:
-{aliases}
-"""
+    return (
+        f"{profile.get('industry', '')}. "
+        f"{profile.get('category', '')}. "
+        f"{profile.get('description', '')}. "
+        f"{keywords}. "
+        f"{aliases}."
+    )
 
 
 def main():
