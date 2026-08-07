@@ -1,6 +1,3 @@
-from copy import deepcopy
-import json
-
 from models.llama_model import LlamaModel
 from prompts.entity_prompt import EntityPromptBuilder
 from prompts.mcc_prompt import MCCPromptBuilder
@@ -25,6 +22,10 @@ class MCCClassifier:
             self.retriever.model
         )
 
+    ####################################################
+    # MAIN
+    ####################################################
+
     def classify(
         self,
         article_name: str,
@@ -32,181 +33,186 @@ class MCCClassifier:
     ):
 
         ####################################################
-        # STEP 1 : ENTITY UNDERSTANDING
+        # ENTITY EXTRACTION
         ####################################################
 
         entity_prompt = self.entity_prompt_builder.build_prompt(
+
             article_name,
+
             instance_of
+
         )
 
-        entity_profile = None
+        entity_response = self.model.generate(
 
-        for attempt in range(2):
+            entity_prompt
 
-            entity_response = self.model.generate(
-                entity_prompt
-            )
-
-            try:
-
-                entity_profile = JSONParser.parse(
-                    entity_response
-                )
-
-                break
-
-            except (json.JSONDecodeError, ValueError):
-
-                if attempt == 1:
-                    raise
-
-                print(f"Attempt {attempt + 1}: Invalid JSON. Retrying...")
-
-        ####################################################
-        # CREATE CLEAN PROFILE FOR MAPPING
-        ####################################################
-
-        entity_for_mapping = deepcopy(
-            entity_profile
         )
 
-        entity_for_mapping.pop(
-            "predicted_mcc",
-            None
-        )
+        entity_profile = JSONParser.parse(
 
-        entity_for_mapping.pop(
-            "predicted_mcc_industry",
-            None
-        )
+            entity_response
 
-        entity_for_mapping.pop(
-            "predicted_mcc_reason",
-            None
         )
 
         ####################################################
-        # STEP 2 : RETRIEVE MCC CANDIDATES
+        # CLEAN PROFILE
+        ####################################################
+
+        entity_for_mapping = {
+
+            k: v
+
+            for k, v in entity_profile.items()
+
+            if not k.startswith("predicted_")
+
+        }
+
+        ####################################################
+        # RETRIEVE MCCs
         ####################################################
 
         candidates = self.retriever.retrieve(
+
             entity_for_mapping,
+
             top_k=20
+
         )
 
         ####################################################
-        # DEBUG RETRIEVED MCCs
+        # FAST LOOKUP
         ####################################################
 
-        print("\n" + "=" * 80)
-        print("TOP 20 RETRIEVED MCCs")
-        print("=" * 80)
+        candidate_lookup = {
 
-        for i, c in enumerate(candidates, 1):
+            str(c["mcc"]): c
 
-            print(
-                f"{i:2d}. "
-                f"MCC: {c['mcc']} | "
-                f"Industry: {c['industry']} | "
-                f"Category: {c['category']} | "
-                f"Score: {c['retrieval_score']:.4f}"
-            )
+            for c in candidates
 
-        print("=" * 80 + "\n")
+        }
 
         ####################################################
-        # STEP 3 : FINAL MCC SELECTION
+        # FINAL PROMPT
         ####################################################
 
         mcc_prompt = self.mcc_prompt_builder.build_prompt(
+
             entity_for_mapping,
+
             candidates
+
         )
 
-        final_result = None
+        mcc_response = self.model.generate(
 
-        for attempt in range(2):
+            mcc_prompt
 
-            mcc_response = self.model.generate(
-                mcc_prompt
-            )
+        )
 
-            print("\n" + "=" * 80)
-            print("RAW MCC RESPONSE")
-            print("=" * 80)
-            print(mcc_response)
-            print("=" * 80 + "\n")
+        final_result = JSONParser.parse(
 
-            try:
+            mcc_response
 
-                final_result = JSONParser.parse(
-                    mcc_response
-                )
-
-                print("\n" + "=" * 80)
-                print("PARSED MCC RESULT")
-                print("=" * 80)
-                print(final_result)
-                print("=" * 80 + "\n")
-
-                break
-
-            except json.JSONDecodeError:
-
-                if attempt == 1:
-                    raise
-
-                print("Invalid JSON returned by model. Retrying...")
+        )
 
         ####################################################
-        # STEP 4 : ADD CONFIDENCE TO TOP 5 MCCs
+        # VALIDATE
         ####################################################
 
         predictions = final_result.get(
+
             "top_5_mcc_predictions",
+
             []
+
         )
 
-        if not predictions:
+        if len(predictions) != 5:
 
             raise ValueError(
-                "Model did not return 'top_5_mcc_predictions'."
+                f"Expected 5 MCC predictions, got {len(predictions)}."
             )
+
+        ####################################################
+        # CONFIDENCE
+        ####################################################
+
+        used_mccs = set()
 
         for prediction in predictions:
 
-            selected_profile = None
+            mcc = str(
+                prediction.get(
+                    "mcc",
+                    ""
+                )
+            )
 
-            for profile in candidates:
-
-                if str(profile["mcc"]) == str(
-                    prediction.get("mcc")
-                ):
-
-                    selected_profile = profile
-                    break
-
-            if selected_profile is None:
+            if mcc in used_mccs:
 
                 raise ValueError(
-                    f"Model selected MCC "
-                    f"{prediction.get('mcc')} "
-                    f"which is not present in the retrieved candidates."
+                    f"Duplicate MCC returned: {mcc}"
                 )
 
+            used_mccs.add(mcc)
+
+            if mcc not in candidate_lookup:
+
+                raise ValueError(
+                    f"MCC {mcc} was not retrieved."
+                )
+
+            selected_profile = candidate_lookup[mcc]
+
             confidence = self.confidence.calculate(
+
                 entity_profile=entity_profile,
+
                 selected_profile=selected_profile
+
             )
 
             prediction["confidence"] = confidence
+
+            prediction["retrieval_score"] = round(
+
+                selected_profile.get(
+                    "retrieval_score",
+                    0.0
+                ),
+
+                4
+
+            )
+
+        ####################################################
+        # SORT BY RANK
+        ####################################################
+
+        predictions.sort(
+
+            key=lambda x: x.get(
+                "rank",
+                999
+            )
+
+        )
 
         ####################################################
         # RETURN
         ####################################################
 
         return {
+
             "entity_profile": entity_profile,
-            "final_prediction": final_result,
+
+            "final_prediction": {
+
+                "top_5_mcc_predictions": predictions
+
+            }
+
         }
